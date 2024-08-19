@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:15
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes: 
+      - ./backend/pgdata:/var/lib/postgresql/data
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        BUILD_TYPE: development
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
+    depends_on:
+      - db
+      - rabbitmq
+    
+  rabbitmq:
+    image: rabbitmq:3.13.6-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: myuser
+      RABBITMQ_DEFAULT_PASS: mypassword
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A backend worker --loglevel=info
+    volumes:
+      - ./backend:/test_playground/backend
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
+    depends_on:
+      - db
+      - rabbitmq

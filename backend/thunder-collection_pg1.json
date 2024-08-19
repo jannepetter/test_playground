@@ -1,0 +1,117 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "pg1",
+    "collectionId": "a8e6aa8a-6c22-4b8c-b82f-79783154ee55",
+    "dateExported": "2024-08-15T13:40:33.657Z",
+    "version": "1.2",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "e1b6f040-0394-4fa0-8625-912fbe49b4c2",
+            "colId": "a8e6aa8a-6c22-4b8c-b82f-79783154ee55",
+            "containerId": "",
+            "name": "login",
+            "url": "http://localhost:8000/api/token/",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-08-15T13:37:36.015Z",
+            "modified": "2024-08-15T13:37:36.015Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\":\"janne\",\n  \"password\":\"janne\"\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "set-env-var",
+                    "custom": "json.access",
+                    "action": "setto",
+                    "value": "{{access}}"
+                },
+                {
+                    "type": "set-env-var",
+                    "custom": "json.refresh",
+                    "action": "setto",
+                    "value": "{{refresh}}"
+                }
+            ]
+        },
+        {
+            "_id": "01c78898-a4ea-4642-a013-be9625ec3901",
+            "colId": "a8e6aa8a-6c22-4b8c-b82f-79783154ee55",
+            "containerId": "",
+            "name": "post blog",
+            "url": "http://localhost:8000/api/blog/",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-08-15T13:37:36.017Z",
+            "modified": "2024-08-15T13:37:36.017Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"title\":\"titteli2\",\n  \"content\":\"joo2\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{access}}"
+            }
+        },
+        {
+            "_id": "e72e2884-197a-4f21-80fe-4f0c09b53563",
+            "colId": "a8e6aa8a-6c22-4b8c-b82f-79783154ee55",
+            "containerId": "",
+            "name": "refresh",
+            "url": "http://localhost:8000/api/token/refresh/",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-08-15T13:37:36.018Z",
+            "modified": "2024-08-15T13:37:36.018Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"refresh\":\"{{refresh}}\"\n}",
+                "form": []
+            },
+            "tests": [
+                {
+                    "type": "set-env-var",
+                    "custom": "json.access",
+                    "action": "setto",
+                    "value": "{{access}}"
+                }
+            ]
+        },
+        {
+            "_id": "11952867-fb54-40e0-b6be-3ca3e8954474",
+            "colId": "a8e6aa8a-6c22-4b8c-b82f-79783154ee55",
+            "containerId": "",
+            "name": "add numbers",
+            "url": "http://localhost:8000/api/add-numbers/",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2024-08-15T13:37:56.655Z",
+            "modified": "2024-08-15T13:38:34.761Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"x\":4,\n  \"y\":6\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "2ca2067d-5bd9-4920-8124-62a0093ec769",
+            "colId": "a8e6aa8a-6c22-4b8c-b82f-79783154ee55",
+            "containerId": "",
+            "name": "get task status",
+            "url": "http://localhost:8000/api/task-status/f054183b-05c9-4270-99e1-2e4571db8187",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2024-08-15T13:38:52.377Z",
+            "modified": "2024-08-15T13:39:27.694Z",
+            "headers": []
+        }
+    ],
+    "ref": "JYVyg2FryZCoRW2k2J3ArqYdw1-BjPaY2BH3tYJum13B3EuEbSUFQiPE8xEB2PCpSEkqHAvUL-GmTz5sKS6rbQ"
+}
