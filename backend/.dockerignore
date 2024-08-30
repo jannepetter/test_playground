@@ -1,2 +1,4 @@
 ./pgdata/
 *__pycache__
+.env
+.coverage

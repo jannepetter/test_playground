@@ -1,0 +1,35 @@
+{
+  "name": "Nextjs Devcontainer",
+  "dockerComposeFile": "../../docker-compose.yml",
+  "service": "frontend",
+  "initializeCommand": "echo 'Starting frontend dev container!'",
+  "workspaceFolder": "/test_playground/",
+  "mounts": [
+    "source=${localWorkspaceFolder}/docker-compose.yml,target=/test_playground/docker-compose.yml,type=bind",
+    "source=${localWorkspaceFolder}/frontend,target=/test_playground/frontend,type=bind",
+    "source=${localWorkspaceFolder}/.git,target=/test_playground/.git,type=bind",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1.5.0": {}
+  },
+  "postCreateCommand": "git config --global --add safe.directory /test_playground",
+  "postStartCommand": "docker-compose logs -f",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "eslint.workingDirectories": ["./frontend"],
+        "node.nodePath": "/usr/local/bin/node",
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "rangav.vscode-thunder-client",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}

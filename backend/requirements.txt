@@ -8,3 +8,4 @@ black==24.8.0
 pylint==3.2.6
 celery==5.4.0
 django-celery-results==2.5.1
+django-cors-headers==4.4.0

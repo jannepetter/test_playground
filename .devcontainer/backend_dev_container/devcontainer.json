@@ -1,0 +1,43 @@
+{
+  "name": "Django Devcontainer",
+  "dockerComposeFile": "../../docker-compose.yml",
+  "service": "server",
+  "initializeCommand": "echo 'Starting server dev container!'",
+  "workspaceFolder": "/test_playground/",
+  "mounts": [
+    "source=${localWorkspaceFolder}/docker-compose.yml,target=/test_playground/docker-compose.yml,type=bind",
+    "source=${localWorkspaceFolder}/backend,target=/test_playground/backend,type=bind",
+    "source=${localWorkspaceFolder}/.git,target=/test_playground/.git,type=bind",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1.5.0": {}
+  },
+  "postCreateCommand": "git config --global --add safe.directory /test_playground",
+  "postStartCommand": "docker-compose logs -f",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": ["source.organizeImports"]
+        },
+        "python.pythonPath": "/usr/local/bin/python",
+        "python.testing.unittestArgs": ["-v", "-s", "./", "-p", "test_*.py"],
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "python.linting.pylintPath": "/usr/local/bin/pylint",
+        "python.linting.pylintArgs": [
+          "--rcfile=${localWorkspaceFolder}/backend/.pylintrc"
+        ]
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylint",
+        "ms-azuretools.vscode-docker",
+        "rangav.vscode-thunder-client",
+        "ms-python.black-formatter"
+      ]
+    }
+  }
+}

@@ -13,13 +13,13 @@ RUN apt-get update && apt-get install -y libpq-dev && \
 RUN groupadd -g ${GROUP_ID} vscode && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m vscode
 
-COPY ./backend .
+COPY . .
+
 RUN chown -R vscode:vscode /test_playground/backend
 RUN chsh -s /bin/bash vscode
 
 RUN if [ "$BUILD_TYPE" = "development" ]; then \
-    apt-get install -y docker.io docker-compose && \
-    groupmod -g 1001 docker && \
+    groupadd docker && \
     usermod -aG docker vscode; \
     fi
 

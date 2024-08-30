@@ -7,7 +7,7 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    volumes: 
+    volumes:
       - ./backend/pgdata:/var/lib/postgresql/data
   server:
     build:
@@ -23,10 +23,13 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
+      - JWT_SIGNING_KEY=your-signing-key
+      - JWT_VERIFYING_KEY=your-verifying-key
+      - DJANGO_SECRET_KEY=django-secret-key
     depends_on:
       - db
       - rabbitmq
-    
+
   rabbitmq:
     image: rabbitmq:3.13.6-management
     container_name: rabbitmq
@@ -49,6 +52,23 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
+      - JWT_SIGNING_KEY=your-signing-key
+      - JWT_VERIFYING_KEY=your-verifying-key
+      - DJANGO_SECRET_KEY=django-secret-key
     depends_on:
       - db
       - rabbitmq
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        BUILD_TYPE: development
+    command: npm run dev
+    ports:
+      - 3000:3000
+    environment:
+      - NEXT_PUBLIC_SERVER_URL=http://localhost:8000
+    depends_on:
+      - server

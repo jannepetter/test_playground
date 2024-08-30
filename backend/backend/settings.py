@@ -22,15 +22,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-$))gvxii6%2g9%5d&1^vtaq(kek18esv=b+5jmz5g5ka0kw-gy"
+SECRET_KEY = (os.environ.get("DJANGO_SECRET_KEY"),)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "frontend"]
 
+CORS_ORIGIN_ALLOW_ALL = False
 
-# Application definition
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://frontend:3000",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -42,10 +46,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "django_celery_results",
+    "corsheaders",
     "blogs",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -136,14 +142,15 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": "your-new-secret-key",
-    "VERIFYING_KEY": "your-new-verify-key",
+    "SIGNING_KEY": os.environ.get("JWT_SIGNING_KEY"),
+    "VERIFYING_KEY": os.environ.get("JWT_VERIFYING_KEY"),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
@@ -155,4 +162,3 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
 CELERY_RESULT_BACKEND = "django-db"
-# CELERY_RESULT_BACKEND = 'rpc://'
