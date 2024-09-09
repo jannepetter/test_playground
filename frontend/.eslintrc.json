@@ -16,5 +16,12 @@
         "extensions": [".ts", ".js", ".jsx", ".json"]
       }
     }
+  },
+  "rules": {
+    "react/prop-types": "off"
+  },
+  "env": {
+    "es6": true,
+    "jest": true
   }
 }

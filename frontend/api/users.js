@@ -1,7 +1,11 @@
 import apiClient from "@/utils/fetcher";
 
 export const login = async (username, password) => {
-  const data = await apiClient.post("/api/token/", { username, password });
-  console.log("resp--", data);
-  return data;
+  const response = await apiClient.post("/api/token/", { username, password });
+  return response;
+};
+
+export const refreshedAccessToken = async (refreshToken) => {
+  const response = await apiClient.post("/api/token/refresh/", { refresh: refreshToken });
+  return response;
 };

@@ -5,6 +5,9 @@ Custom viewsets.
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import viewsets
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework.request import Request
 
 
 class BaseModelViewSet(viewsets.ModelViewSet):
@@ -85,3 +88,19 @@ class BaseModelViewSet(viewsets.ModelViewSet):
 
         serializer_class = self.get_serializer_class()
         return serializer_class(*args, **kwargs)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        user = {"username": serializer.user.username, "id": serializer.user.id}
+        data = serializer.validated_data
+        data["user"] = user
+
+        return Response(data, status=status.HTTP_200_OK)

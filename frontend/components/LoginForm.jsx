@@ -1,36 +1,52 @@
 "use client";
+
 import { login } from "@/api/users";
+import { useUserContext } from "@/context/user";
+import { saveUserToLocalStorage } from "@/utils/storage";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const LoginForm = () => {
+  const [_, setUser] = useUserContext(); // eslint-disable-line no-unused-vars
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await login(username, password);
-    console.log("submittia");
+    try {
+      const response = await login(username, password);
+      saveUserToLocalStorage(response.data);
+      setUser(response.data.user);
+      setUsername("");
+      setPassword("");
+      router.push("/blogs");
+    } catch (error) {
+      console.log("err--", error);
+      throw new Error(error.response?.data?.detail || "Login failed");
+    }
   };
   const inputClass = "border-2 m-5";
   return (
-    <div className="bg-sky-400 ">
-      <form onSubmit={handleLogin}>
+    <div className="bg-sky-400 py-20">
+      <h1 className="mx-auto max-w-md">Login</h1>
+      <form onSubmit={handleLogin} data-testid="login-form">
         <div className="m-auto max-w-md">
-          username
+          <label>username</label>
           <input
             className={inputClass}
             type="text"
             value={username}
-            name="login-username"
+            data-testid="login-username"
             onChange={(e) => setUsername(e.target.value)}
           />
           <br></br>
-          password
+          <label>password</label>
           <input
             className={inputClass}
-            type="text"
+            type="password"
             value={password}
-            name="login-password"
+            data-testid="login-password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <br></br>
