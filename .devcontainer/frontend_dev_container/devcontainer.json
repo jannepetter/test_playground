@@ -25,10 +25,10 @@
         "terminal.integrated.shell.linux": "/bin/bash"
       },
       "extensions": [
-        "ms-azuretools.vscode-docker",
         "rangav.vscode-thunder-client",
         "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "ms-playwright.playwright"
       ]
     }
   }

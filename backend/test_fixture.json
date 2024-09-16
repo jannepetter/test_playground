@@ -1,0 +1,9 @@
+[
+    {"model": "auth.user", "pk": 1, "fields": {"password": "pbkdf2_sha256$720000$aXJX68EznBLaehfmh1S0j0$S8HrW1DnbQmBs2m0tLh5FHixs3Gk9Z2fUdEtg4qpIRk=", "last_login": null, "is_superuser": true, "username": "testuser", "first_name": "", "last_name": "", "email": "testuser@some.com", "is_staff": true, "is_active": true, "date_joined": "2024-09-11T12:17:53.077Z", "groups": [], "user_permissions": []}},
+    {"model": "auth.user", "pk": 2, "fields": {"password": "pbkdf2_sha256$720000$aXJX68EznBLaehfmh1S0j0$S8HrW1DnbQmBs2m0tLh5FHixs3Gk9Z2fUdEtg4qpIRk=", "last_login": null, "is_superuser": false, "username": "basicuser", "first_name": "", "last_name": "", "email": "basic@some.com", "is_staff": false, "is_active": true, "date_joined": "2024-09-11T12:17:53.077Z", "groups": [], "user_permissions": []}},
+    {"model": "blogs.blog", "pk": 1, "fields": {"title": "some title", "content": "test content", "created_at": "2024-09-10T20:17:16.605Z", "updated_at": "2024-09-10T20:17:16.605Z", "user": 1}},
+    {"model": "blogs.blog", "pk": 2, "fields": {"title": "another title", "content": "some content", "created_at": "2024-09-10T20:17:16.605Z", "updated_at": "2024-09-10T20:17:16.605Z", "user": 1}},
+    {"model": "blogs.blog", "pk": 3, "fields": {"title": "something", "content": "other", "created_at": "2024-09-10T20:17:16.605Z", "updated_at": "2024-09-10T20:17:16.605Z", "user": 1}},
+    {"model": "blogs.blog", "pk": 4, "fields": {"title": "test title", "content": "boring content", "created_at": "2024-09-10T20:17:16.605Z", "updated_at": "2024-09-10T20:17:16.605Z", "user": 2}}
+
+]

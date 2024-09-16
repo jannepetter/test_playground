@@ -15,7 +15,7 @@ jest.mock("../api/users", () => ({
   login: jest.fn(),
 }));
 
-jest.mock("../utils/storage", () => ({
+jest.mock("../app/utils/storage", () => ({
   saveUserToLocalStorage: jest.fn(),
 }));
 
@@ -32,10 +32,10 @@ describe("Login form", () => {
     expect(screen.getByText("username")).toBeInTheDocument();
     expect(screen.getByText("password")).toBeInTheDocument();
 
-    const usernameInput = screen.getByTestId("login-username");
+    const usernameInput = screen.getByPlaceholderText("username");
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    const passwordInput = screen.getByTestId("login-password");
+    const passwordInput = screen.getByPlaceholderText("password");
     fireEvent.change(passwordInput, { target: { value: "testpassword" } });
     const submitButton = screen.getByRole("button", { name: "Submit" });
 

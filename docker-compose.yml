@@ -72,3 +72,19 @@ services:
       - NEXT_PUBLIC_SERVER_URL=http://localhost:8000
     depends_on:
       - server
+
+  playwright:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.playwright
+    command: npm run start
+    volumes:
+      - ./frontend:/test_playground/frontend
+      - next_volume:/test_playground/frontend/.next
+    environment:
+      - NEXT_PUBLIC_SERVER_URL=http://server:8000
+    depends_on:
+      - frontend
+
+volumes:
+  next_volume:

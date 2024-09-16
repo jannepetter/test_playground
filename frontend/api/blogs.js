@@ -1,4 +1,4 @@
-import apiClient from "@/utils/fetcher";
+import apiClient from "@/app/utils/fetcher";
 
 export const getBlogs = async () => {
   const response = await apiClient.get("/api/blog/");
