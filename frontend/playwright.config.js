@@ -1,6 +1,6 @@
 // @ts-check
 const { defineConfig, devices } = require("@playwright/test");
-
+import path from "path";
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -20,6 +20,7 @@ module.exports = defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  globalSetup: path.join(__dirname, "/e2e/setup.js"),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

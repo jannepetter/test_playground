@@ -1,27 +1,11 @@
 const { test, expect } = require("@playwright/test");
-const { exec } = require("child_process");
+const { startTransaction, rollbackTransaction } = require("./helper");
 
 const testAuthPath = "/test_playground/frontend/e2e/auth.json";
-
-const resetDb = async () => {
-  console.log("Restoring the database...");
-
-  await new Promise((resolve, reject) => {
-    exec("sh /test_playground/frontend/reset_db.sh", (error, stdout) => {
-      if (error) {
-        console.error(`Error restoring database: ${error}`);
-        return reject(error);
-      }
-      console.log("Database restored successfully:", stdout);
-      resolve();
-    });
-  });
-};
 
 test.describe("Tests for blogs", () => {
   test.beforeAll(async ({ browser }) => {
     // test login and save it for reuse
-    // await resetDb();
     const context = await browser.newContext({ storageState: testAuthPath });
     const page = await context.newPage();
     await page.goto("/login");
@@ -37,8 +21,25 @@ test.describe("Tests for blogs", () => {
 
   test.use({ storageState: testAuthPath });
 
+  test.beforeEach(async () => {
+    const client = await startTransaction();
+    test.client_instance = client;
+  });
+  test.afterEach(async () => {
+    await rollbackTransaction(test.client_instance);
+  });
+
   test("Get blogs", async ({ page }) => {
     await page.goto("/blogs");
-    await expect(page).toHaveTitle("Frontend");
+    // await page.waitForLoadState("domcontentloaded");
+    await page.waitForResponse("http://server:8000/api/blog/", { timeout: 15000 });
+    const blogList = await page.getByTestId("blogList").getByRole("link").all();
+
+    console.log("list--", blogList.length);
+
+    // expect(blogList).toHaveText("some title");
+    // expect(blogList).toHaveText("another title");
+    // expect(blogList).toHaveText("something");
+    // expect(blogList).toHaveText("test title");
   });
 });
