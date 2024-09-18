@@ -5,7 +5,7 @@ import React from "react";
 import BlogDetail from "@/components/blog/BlogDetail";
 import { UserProvider } from "@/context/user";
 import { deleteBlog, createBlog } from "@/api/blogs";
-import NewBlogForm from "@/components/blog/NewBlogForm";
+import NewBlog from "@/components/blog/NewBlog";
 
 jest.mock("../api/blogs", () => ({
   deleteBlog: jest.fn(),
@@ -114,8 +114,8 @@ describe("Blog components", () => {
     expect(deleteBlog).toHaveBeenCalledWith(1);
   });
 
-  it("NewBlogForm renders correctly", async () => {
-    render(<NewBlogForm />);
+  it("NewBlog renders correctly", async () => {
+    render(<NewBlog />);
 
     const blogForm = screen.getByTestId("new-blog-form");
     expect(blogForm).toBeInTheDocument();

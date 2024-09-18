@@ -1,9 +1,9 @@
 import React from "react";
 
-const ConfirmModal = ({ title, content, onConfirm, isOpen, onClose }) => {
+const ConfirmModal = ({ title, content, onConfirm, isOpen, onClose, testId = "confirm-modal" }) => {
   return (
     <>
-      <dialog className="modal bg-gray-500 bg-opacity-50" open={isOpen}>
+      <dialog className="modal bg-gray-500 bg-opacity-50" open={isOpen} data-testid={testId}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">{title}</h3>
           <p className="py-4">{content}</p>

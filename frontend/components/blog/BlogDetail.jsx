@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/user";
 import ConfirmModal from "../ConfirmModal";
+import Link from "next/link";
 
 export default function BlogDetail({ blog }) {
   const [user, _] = useUserContext(); // eslint-disable-line no-unused-vars
@@ -29,13 +30,18 @@ export default function BlogDetail({ blog }) {
         title="Delete blog?"
         content="Confirm blog delete"
       ></ConfirmModal>
-      <div className="m-10">
+      <div className="m-10" data-testid="blog-detail">
         <h1 className="my-5">{blog.title}</h1>
         <p>{blog.content}</p>
         {user.id == blog.user.id && (
-          <button className="btn btn-secondary mt-20" onClick={() => setIsOpen(true)}>
-            Delete
-          </button>
+          <>
+            <button className="btn btn-secondary mt-20" onClick={() => setIsOpen(true)}>
+              Delete
+            </button>
+            <Link className="btn btn-outline mt-20 ml-5" href={`/blogs/${blog.id}/update`}>
+              Update
+            </Link>
+          </>
         )}
       </div>
     </div>
