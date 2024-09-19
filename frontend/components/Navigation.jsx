@@ -12,7 +12,7 @@ const Navigation = () => {
 
   if (!user?.username) {
     return (
-      <div className="h-20 bg-blue-500 sticky top-0 flex items-center">
+      <div className="h-20 bg-blue-500 sticky top-0 flex items-center" data-testid="navbar">
         <span className={navItem}>The app</span>
       </div>
     );

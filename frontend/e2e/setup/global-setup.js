@@ -2,6 +2,8 @@ const { chromium, expect } = require("@playwright/test");
 import { resetDb, testAuthPath } from "./helper";
 
 async function globalSetup(config) {
+  // you might need to rebuild the playwright container first,
+  // if changes have been made to ui: npm run pw-refresh
   const baseUrl = config.projects[0].use.baseURL;
   console.log("Running playwright test setup...");
   await resetDb();

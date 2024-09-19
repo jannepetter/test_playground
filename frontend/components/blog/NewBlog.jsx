@@ -17,7 +17,8 @@ const NewBlog = () => {
   };
 
   return (
-    <div>
+    <div className="mx-auto max-w-md">
+      <h1 className="my-10">Create blog</h1>
       <BlogForm
         onSubmit={handleSubmit}
         onContentChange={setContent}

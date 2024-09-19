@@ -34,8 +34,8 @@ const UpdateBlog = ({ blog }) => {
   };
 
   return (
-    <div>
-      <h1>Update Blog</h1>
+    <div className="mx-auto max-w-md">
+      <h1 className="my-10">Update Blog</h1>
       <BlogForm
         onSubmit={handleSubmit}
         onContentChange={setContent}

@@ -27,10 +27,9 @@ const Blogs = () => {
   }, [router]);
 
   return (
-    <div>
-      <h1 className="text-3xl text-center">Blogs</h1>
+    <>
       <BlogList blogList={blogs} />
-    </div>
+    </>
   );
 };
 

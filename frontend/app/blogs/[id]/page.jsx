@@ -11,8 +11,8 @@ export default function Page({ params }) {
   }, [id]);
 
   return (
-    <div>
+    <>
       <BlogDetail blog={blog} />
-    </div>
+    </>
   );
 }
