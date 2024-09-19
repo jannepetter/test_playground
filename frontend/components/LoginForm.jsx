@@ -2,7 +2,7 @@
 
 import { login } from "@/api/users";
 import { useUserContext } from "@/context/user";
-import { saveUserToLocalStorage } from "@/utils/storage";
+import { saveUserToLocalStorage } from "@/app/utils/storage";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -37,7 +37,7 @@ const LoginForm = () => {
             className={inputClass}
             type="text"
             value={username}
-            data-testid="login-username"
+            placeholder="username"
             onChange={(e) => setUsername(e.target.value)}
           />
           <br></br>
@@ -46,7 +46,7 @@ const LoginForm = () => {
             className={inputClass}
             type="password"
             value={password}
-            data-testid="login-password"
+            placeholder="password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <br></br>

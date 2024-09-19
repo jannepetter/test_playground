@@ -1,4 +1,4 @@
-import apiClient from "@/utils/fetcher";
+import apiClient from "@/app/utils/fetcher";
 
 export const login = async (username, password) => {
   const response = await apiClient.post("/api/token/", { username, password });
@@ -6,6 +6,8 @@ export const login = async (username, password) => {
 };
 
 export const refreshedAccessToken = async (refreshToken) => {
-  const response = await apiClient.post("/api/token/refresh/", { refresh: refreshToken });
+  const response = await apiClient.post("/api/token/refresh/", {
+    refresh: refreshToken,
+  });
   return response;
 };

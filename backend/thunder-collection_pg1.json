@@ -1,21 +1,21 @@
 {
     "clientName": "Thunder Client",
     "collectionName": "pg1",
-    "collectionId": "e9b27986-6942-48ea-b4d8-db58dae252f2",
-    "dateExported": "2024-08-30T14:46:30.178Z",
+    "collectionId": "a3b2b1f9-6c0e-4e8c-afb0-caa35056800c",
+    "dateExported": "2024-09-10T20:50:07.056Z",
     "version": "1.2",
     "folders": [],
     "requests": [
         {
-            "_id": "fe612324-9a9e-4c7f-94d7-7e77b660dd28",
-            "colId": "e9b27986-6942-48ea-b4d8-db58dae252f2",
+            "_id": "226735d0-80b5-4550-8bed-f7645da6909e",
+            "colId": "a3b2b1f9-6c0e-4e8c-afb0-caa35056800c",
             "containerId": "",
             "name": "login",
             "url": "http://localhost:8000/api/token/",
             "method": "POST",
             "sortNum": 10000,
-            "created": "2024-08-28T18:23:17.983Z",
-            "modified": "2024-08-30T14:45:22.730Z",
+            "created": "2024-09-10T20:47:20.394Z",
+            "modified": "2024-09-10T20:47:20.394Z",
             "headers": [],
             "body": {
                 "type": "json",
@@ -38,15 +38,15 @@
             ]
         },
         {
-            "_id": "488fea62-3d3a-40a2-9888-f512a143a0dc",
-            "colId": "e9b27986-6942-48ea-b4d8-db58dae252f2",
+            "_id": "64b3a83d-8462-4092-9178-ea9e4a5387b5",
+            "colId": "a3b2b1f9-6c0e-4e8c-afb0-caa35056800c",
             "containerId": "",
             "name": "post blog",
             "url": "http://localhost:8000/api/blog/",
             "method": "POST",
             "sortNum": 20000,
-            "created": "2024-08-28T18:23:17.984Z",
-            "modified": "2024-08-30T14:45:44.375Z",
+            "created": "2024-09-10T20:47:20.395Z",
+            "modified": "2024-09-10T20:47:20.395Z",
             "headers": [],
             "body": {
                 "type": "json",
@@ -59,15 +59,15 @@
             }
         },
         {
-            "_id": "379261f4-3f6a-4836-8228-bc9b21c2ad81",
-            "colId": "e9b27986-6942-48ea-b4d8-db58dae252f2",
+            "_id": "af893c4a-fa16-4e9a-8632-1f8856717f3f",
+            "colId": "a3b2b1f9-6c0e-4e8c-afb0-caa35056800c",
             "containerId": "",
             "name": "refresh",
             "url": "http://localhost:8000/api/token/refresh/",
             "method": "POST",
             "sortNum": 30000,
-            "created": "2024-08-28T18:23:17.985Z",
-            "modified": "2024-08-28T18:23:17.985Z",
+            "created": "2024-09-10T20:47:20.396Z",
+            "modified": "2024-09-10T20:47:20.396Z",
             "headers": [],
             "body": {
                 "type": "json",
@@ -82,7 +82,39 @@
                     "value": "{{access}}"
                 }
             ]
+        },
+        {
+            "_id": "9589f1a8-09b0-49cc-9a54-be6e6d3d78fa",
+            "colId": "a3b2b1f9-6c0e-4e8c-afb0-caa35056800c",
+            "containerId": "",
+            "name": "get blogs",
+            "url": "http://localhost:8000/api/blog/",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2024-09-10T20:48:04.994Z",
+            "modified": "2024-09-10T20:48:35.459Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{access}}"
+            }
+        },
+        {
+            "_id": "869c55e5-a268-4d33-9b58-6059e656e94c",
+            "colId": "a3b2b1f9-6c0e-4e8c-afb0-caa35056800c",
+            "containerId": "",
+            "name": "delete blog",
+            "url": "http://localhost:8000/api/blog/59",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2024-09-10T20:49:16.066Z",
+            "modified": "2024-09-10T20:49:40.143Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{access}}"
+            }
         }
     ],
-    "ref": "DNz6ngTcTJwZqBy6VBFazRhnrtIRKMZZUkAd32Ey7FbAf60JBnVcUlVIcGi1xjkZum-Z8fxBzULdH8IEleMryQ"
+    "ref": "AoxehTxFZkaTsmpL-n-Gxw4nUKLLJ5j2RHdzNaTUdGQnBWhMnoLYRVQVHZ4tNUVYpJZ7tSqdifKILDrJ-UClqQ"
 }
