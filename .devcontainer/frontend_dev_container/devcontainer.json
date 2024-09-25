@@ -5,9 +5,10 @@
   "initializeCommand": "echo 'Starting frontend dev container!'",
   "workspaceFolder": "/test_playground/",
   "mounts": [
-    "source=${localWorkspaceFolder}/docker-compose.yml,target=/test_playground/docker-compose.yml,type=bind",
-    "source=${localWorkspaceFolder}/frontend,target=/test_playground/frontend,type=bind",
-    "source=${localWorkspaceFolder}/.git,target=/test_playground/.git,type=bind",
+    "source=${localWorkspaceFolder}/,target=/test_playground/,type=bind",
+    // "source=${localWorkspaceFolder}/docker-compose.yml,target=/test_playground/docker-compose.yml,type=bind",
+    // "source=${localWorkspaceFolder}/frontend,target=/test_playground/frontend,type=bind",
+    // "source=${localWorkspaceFolder}/.git,target=/test_playground/.git,type=bind",
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
   "features": {
