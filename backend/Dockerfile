@@ -2,7 +2,6 @@ FROM python:3.12.4-slim-bookworm
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-ARG BUILD_TYPE=production
 
 WORKDIR /test_playground/backend
 COPY ./requirements.txt .
@@ -18,10 +17,8 @@ COPY . .
 RUN chown -R vscode:vscode /test_playground/backend
 RUN chsh -s /bin/bash vscode
 
-RUN if [ "$BUILD_TYPE" = "development" ]; then \
-    groupadd docker && \
-    usermod -aG docker vscode; \
-    fi
+RUN groupadd docker && \
+    usermod -aG docker vscode
 
 USER vscode
 

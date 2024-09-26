@@ -13,8 +13,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: development
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
@@ -63,8 +61,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: development
     command: npm run dev
     ports:
       - 3000:3000
@@ -85,6 +81,11 @@ services:
       - NEXT_PUBLIC_SERVER_URL=http://server:8000
     depends_on:
       - frontend
+
+  k6:
+    build:
+      context: ./loadtest/k6
+      dockerfile: Dockerfile.k6
 
 volumes:
   next_volume:
