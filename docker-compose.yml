@@ -82,10 +82,5 @@ services:
     depends_on:
       - frontend
 
-  k6:
-    build:
-      context: ./loadtest/k6
-      dockerfile: Dockerfile.k6
-
 volumes:
   next_volume:
