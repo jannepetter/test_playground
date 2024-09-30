@@ -1,0 +1,18 @@
+FROM node:20
+
+ARG NEXT_PUBLIC_SERVER_URL
+ENV NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
+
+WORKDIR /test_playground/frontend
+COPY . .
+
+RUN npm ci
+
+RUN chown -R node:node /test_playground/frontend
+RUN chsh -s /bin/bash node
+
+RUN npm run build
+
+USER node
+
+CMD ["npm", "run", "start"]

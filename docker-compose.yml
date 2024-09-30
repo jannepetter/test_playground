@@ -20,6 +20,7 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - DB_HOST=db
       - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
       - JWT_SIGNING_KEY=your-signing-key
       - JWT_VERIFYING_KEY=your-verifying-key
@@ -49,6 +50,7 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - DB_HOST=db
       - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
       - JWT_SIGNING_KEY=your-signing-key
       - JWT_VERIFYING_KEY=your-verifying-key
