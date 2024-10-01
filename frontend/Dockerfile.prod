@@ -6,7 +6,7 @@ ENV NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
 WORKDIR /test_playground/frontend
 COPY . .
 
-RUN npm ci
+RUN npm ci --omit=dev
 
 RUN chown -R node:node /test_playground/frontend
 RUN chsh -s /bin/bash node

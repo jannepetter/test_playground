@@ -3,6 +3,8 @@ FROM python:3.12.4-slim-bookworm
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
+ENV DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+
 WORKDIR /test_playground/backend
 COPY ./requirements.txt .
 
@@ -25,8 +27,4 @@ USER 1000
 ENTRYPOINT [ "./entry.sh" ]
 CMD ["python", "manage.py", "runserver" , "0.0.0.0:8000"]
 
-# EXPOSE 8000
-
-# CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000 & celery -A backend worker --loglevel=info"]
-# CMD ["python", "manage.py", "runserver","0.0.0.0:8000"]
 # CMD ["python3", "-m", "http.server", "8000"]
