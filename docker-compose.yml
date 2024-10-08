@@ -47,7 +47,7 @@ services:
     volumes:
       - ./backend:/test_playground/backend
     environment:
-      - POSTGRES_NAME=postgres
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - DB_HOST=db

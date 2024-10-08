@@ -8,6 +8,8 @@ from rest_framework import viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework.request import Request
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
 
 
 class BaseModelViewSet(viewsets.ModelViewSet):
@@ -49,7 +51,8 @@ class BaseModelViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         updated_obj = self.perform_update(serializer)
         response_serializer = self.get_response_serializer(updated_obj)
@@ -104,3 +107,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         data["user"] = user
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class HealthCheckView(APIView):
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({'status': 'ok'})

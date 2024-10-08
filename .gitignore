@@ -1,3 +1,5 @@
 grafana
 influxdb
-.env
+.env*
+.terraform*
+*terraform.tfstate*
