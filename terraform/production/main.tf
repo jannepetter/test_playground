@@ -1,15 +1,15 @@
 provider "aws" {
   region = "eu-central-1"
 }
-module "ci_infra" {
+module "prod_infra" {
   source = "../app_infra_module"
 
   POSTGRES_USER     = var.POSTGRES_USER
   POSTGRES_PASSWORD = var.POSTGRES_PASSWORD
-  environment = "ci"
+  environment = "production"
 }
 
-module "ci_app" {
+module "prod_app" {
   source = "../app_module"
 
   POSTGRES_USER     = var.POSTGRES_USER
@@ -20,7 +20,7 @@ module "ci_app" {
   AWS_ACCOUNT_ID    = var.AWS_ACCOUNT_ID
   AWS_REPO          = var.AWS_REPO
 
-  environment = "ci"
+  environment = "production"
 
-  depends_on = [ module.ci_infra ]
+  depends_on = [ module.prod_infra ]
 }
