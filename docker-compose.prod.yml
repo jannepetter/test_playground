@@ -26,6 +26,7 @@ services:
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
       - JWT_VERIFYING_KEY=${JWT_VERIFYING_KEY}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_ENV=development
     depends_on:
       - db
 
@@ -42,3 +43,10 @@ services:
     depends_on:
       - server
 
+  testrunner:
+    build:
+      context: ./loadtest/k6
+      dockerfile: ./container/Dockerfile.k6
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:testrunner
+    environment:
+      - SET_CRONJOBS=1

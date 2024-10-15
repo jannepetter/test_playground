@@ -1,6 +1,8 @@
 services:
   db:
-    image: postgres:16.3
+    build:
+      context: ./
+      dockerfile: Dockerfile.db
     ports:
       - 5432:5432
     environment:
@@ -17,6 +19,7 @@ services:
     ports:
       - 8000:8000
     environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -25,6 +28,7 @@ services:
       - JWT_SIGNING_KEY=your-signing-key
       - JWT_VERIFYING_KEY=your-verifying-key
       - DJANGO_SECRET_KEY=django-secret-key
+      - DJANGO_ENV=development
     depends_on:
       - db
       - rabbitmq
@@ -47,6 +51,7 @@ services:
     volumes:
       - ./backend:/test_playground/backend
     environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -83,6 +88,15 @@ services:
       - NEXT_PUBLIC_SERVER_URL=http://server:8000
     depends_on:
       - frontend
+
+  testrunner:
+    build:
+      context: ./loadtest/k6
+      dockerfile: ./container/Dockerfile.k6
+    image: testrunner
+    environment:
+      - TEST_URL=http://server:8000
+      - SET_CRONJOBS=0
 
 volumes:
   next_volume:

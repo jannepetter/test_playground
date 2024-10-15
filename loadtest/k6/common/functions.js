@@ -43,7 +43,7 @@ export function getBlogList(headers) {
 }
 
 export function getBlogDetail(id, headers) {
-  const res = http.get(`${SERVER_URL}/api/blog/${id}`, {
+  const res = http.get(`${SERVER_URL}/api/blog/${id}/`, {
     ...headers,
     tags: { name: "blog" },
   });

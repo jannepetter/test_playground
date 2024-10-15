@@ -1,0 +1,17 @@
+FROM grafana/k6:0.53.0 as builder
+
+FROM debian:bookworm-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    cron \
+    nano
+
+COPY --from=builder /usr/bin/k6 /usr/bin/k6
+
+WORKDIR /scripts
+COPY . .
+
+ENTRYPOINT [ "/scripts/container/entry.sh" ]
+CMD ["tail", "-f", "/dev/null"]
