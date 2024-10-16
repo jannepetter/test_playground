@@ -34,8 +34,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-      args:
-        - NEXT_PUBLIC_SERVER_URL=${SERVER_URL}
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:frontend
     command: npm run start
     ports:
@@ -49,4 +47,4 @@ services:
       dockerfile: ./container/Dockerfile.k6
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:testrunner
     environment:
-      - SET_CRONJOBS=1
+      - SET_CRONJOBS=cloud

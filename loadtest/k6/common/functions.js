@@ -2,7 +2,7 @@ import http from "k6/http";
 import { check, sleep } from "k6";
 import { SharedArray } from "k6/data";
 
-const SERVER_URL = __ENV.TEST_URL || "http://server:8000";
+const SERVER_URL = __ENV.TEST_URL;
 
 const users = new SharedArray("users", function () {
   return JSON.parse(open("./data.json"));

@@ -193,6 +193,10 @@ resource "aws_ecs_task_definition" "backend_task" {
       {
         name  = "DJANGO_SETTINGS_MODULE"
         value = "backend.settings_ci"
+      },
+      {
+        name = "DJANGO_ENV",
+        value = var.DJANGO_ENV
       }
     ]
     essential = true,
@@ -210,7 +214,8 @@ resource "aws_ecs_service" "backend_service" {
   task_definition = aws_ecs_task_definition.backend_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-
+  enable_execute_command = true
+  
   network_configuration {
     subnets          = [data.aws_subnet.public_subnet2.id]
     security_groups  = [data.aws_security_group.backend_sg.id]

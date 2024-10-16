@@ -1,0 +1,1 @@
+*/10 * * * * /scripts/run_script.sh quick.js 1

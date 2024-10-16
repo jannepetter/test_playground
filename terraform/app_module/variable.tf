@@ -32,3 +32,6 @@ variable "environment" {
   default = "ci"
 }
 
+variable "DJANGO_ENV" {
+  type = string
+}

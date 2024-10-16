@@ -20,6 +20,7 @@ module "prod_app" {
   AWS_ACCOUNT_ID    = var.AWS_ACCOUNT_ID
   AWS_REPO          = var.AWS_REPO
 
+  DJANGO_ENV = "production"
   environment = "production"
 
   depends_on = [ module.prod_infra ]

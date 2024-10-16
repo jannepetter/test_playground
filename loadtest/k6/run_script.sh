@@ -12,8 +12,7 @@ echo "ADDRESS: $ADDRESS"
 echo "case: $CASE"
 
 # CASE 1 -> cloud cronjobs
-# CASE 2 -> local dev env
-# CASE 3 -> local cronjobs against cloud, local or whatever
+# CASE 2 -> local cronjobs against cloud, local or whatever
 
 if [ "$CASE" = "1" ] && [ "$ADDRESS" ]; then
 
@@ -26,23 +25,13 @@ elif [ "$CASE" = "1" ]; then
     echo "Running case 1"
     k6 run "/scripts/$K6_SCRIPT"
 
-elif [ "$CASE" = "2" ] && [ "$ADDRESS" ]; then
-
+elif [ "$CASE" = "2" ]  && [ "$ADDRESS" ]; then
     echo "Running case 2 with address $ADDRESS"
-    docker-compose exec testrunner k6 run --out influxdb="$INFLUXDB_URL" "/scripts/$K6_SCRIPT" --env TEST_URL=${ADDRESS}
-
-elif [ "$CASE" = "2" ]; then
-
-    echo "Running case 2"
-    docker-compose exec testrunner k6 run --out influxdb="$INFLUXDB_URL" "/scripts/$K6_SCRIPT"
-
-elif [ "$CASE" = "3" ]  && [ "$ADDRESS" ]; then
-    echo "Running case 3 with address $ADDRESS"
     k6 run --out influxdb="$INFLUXDB_URL" "/scripts/$K6_SCRIPT" --env TEST_URL=${ADDRESS}
 
-elif [ "$CASE" = "3" ]; then
-    echo "Running case 3"
-    k6 run --out influxdb="$INFLUXDB_URL" "/scripts/$K6_SCRIPT"
+elif [ "$CASE" = "2" ]; then
+    echo "Running case 2"
+    k6 run --out influxdb="$INFLUXDB_URL" "/scripts/$K6_SCRIPT" 
 else
     echo "Invalid action. Usage: $0 script case address"
 fi
