@@ -44,7 +44,7 @@ services:
   testrunner:
     build:
       context: ./loadtest/k6
-      dockerfile: ./container/Dockerfile.k6
+      dockerfile: ./container/Dockerfile.k6_slim
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:testrunner
     environment:
       - SET_CRONJOBS=cloud

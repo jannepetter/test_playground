@@ -94,9 +94,12 @@ services:
       context: ./loadtest/k6
       dockerfile: ./container/Dockerfile.k6
     image: testrunner
+    volumes:
+      - ./loadtest/k6:/scripts
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - TEST_URL=http://server:8000
-      - SET_CRONJOBS=0
+      - SET_CRONJOBS=0  #disabled by default -> set to local|cloud
 
 volumes:
   next_volume:

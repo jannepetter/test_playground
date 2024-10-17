@@ -11,7 +11,6 @@ RUN apt-get update && \
     nano \
     less \
     tini \
-    docker.io \
     && apt-get clean
 
 RUN update-ca-certificates

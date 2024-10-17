@@ -1,1 +1,1 @@
-*/5 * * * * /scripts/run_script.sh quick.js 2
+*/10 * * * * /scripts/run_script.sh quick.js 2 reset
