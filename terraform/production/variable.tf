@@ -27,10 +27,11 @@ variable "AWS_REPO" {
 
 variable "environment" {
   type    = string
-  default = "ci"
+  default = "production"
 }
 
 
 variable "DJANGO_ENV" {
   type    = string
+  default = "production"
 }

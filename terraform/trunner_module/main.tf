@@ -1,27 +1,3 @@
-data "aws_vpc" "main" {
-  filter {
-    name   = "tag:Name"
-    values = ["tpg-vpc-${var.environment}"]
-  }
-}
-
-data "aws_subnet" "public_subnet2" {
-  vpc_id = data.aws_vpc.main.id
-  filter {
-    name   = "tag:Name"
-    values = ["${var.environment}-public-subnet2"]
-  }
-}
-
-data "aws_ecs_cluster" "tpg_ci_cluster" {
-  cluster_name = "tpg-${var.environment}-cluster"
-}
-
-data "aws_lb" "my_load_balancer" {
-    name = "${var.environment}-loadbalancer"
-}
-
-
 resource "aws_iam_policy" "ssm_policy" {
   name        = "${var.environment}-ECSExecPolicyTestrunner"
   description = "Policy to allow ECS Exec for SSM commands"
@@ -69,7 +45,7 @@ resource "aws_iam_role_policy_attachment" "ssm_policy_policy_attachment" {
 }
 
 resource "aws_security_group" "testrunner_sg" {
-  vpc_id = data.aws_vpc.main.id
+  vpc_id = var.vpc.id
   name   = "${var.environment}-testrunner-sg"
 
   egress {
@@ -101,11 +77,11 @@ resource "aws_ecs_task_definition" "testrunner_task" {
     environment = [
       {
         name  = "TEST_URL"
-        value = "${data.aws_lb.my_load_balancer.dns_name}"
+        value = "http://${var.load_balancer.dns_name}"
       },
       {
         name  = "SET_CRONJOBS"
-        value = "0"
+        value = "cloud"
       }
     ]
     logConfiguration = {
@@ -121,15 +97,15 @@ resource "aws_ecs_task_definition" "testrunner_task" {
 }
 
 resource "aws_ecs_service" "testrunner_service" {
-  name            = "${var.environment}-testrunner-service"
-  cluster         = data.aws_ecs_cluster.tpg_ci_cluster.id
-  task_definition = aws_ecs_task_definition.testrunner_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                   = "${var.environment}-testrunner-service"
+  cluster                = var.cluster.id
+  task_definition        = aws_ecs_task_definition.testrunner_task.arn
+  desired_count          = 1
+  launch_type            = "FARGATE"
   enable_execute_command = true
 
   network_configuration {
-    subnets          = [data.aws_subnet.public_subnet2.id]
+    subnets          = [var.public_subnet2.id]
     security_groups  = [aws_security_group.testrunner_sg.id]
     assign_public_ip = true
   }

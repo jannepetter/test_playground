@@ -28,10 +28,56 @@ variable "AWS_REPO" {
 }
 
 variable "environment" {
-  type = string
+  type    = string
   default = "ci"
 }
 
 variable "DJANGO_ENV" {
   type = string
+}
+
+variable "cluster" {
+  type = object({
+    id   = string
+    name = string
+  })
+}
+
+variable "frontend_tg_arn" {
+  type = string
+}
+
+variable "public_subnet" {
+  type = object({
+    id   = string
+    tags = map(string)
+  })
+}
+
+variable "public_subnet2" {
+  type = object({
+    id   = string
+    tags = map(string)
+  })
+}
+
+variable "front_sg_id" {
+  type = string
+}
+
+variable "db_address" {
+  type = string
+}
+
+variable "backend_sg_id" {
+  type = string
+}
+
+variable "backend_tg_arn" {
+  type = string
+}
+
+variable "be_enable_execute_command" {
+  type    = bool
+  default = false
 }

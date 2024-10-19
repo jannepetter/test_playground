@@ -1,25 +1,30 @@
 provider "aws" {
   region = "eu-central-1"
 }
-module "ci_infra" {
+module "infra" {
   source = "../app_infra_module"
 
   POSTGRES_USER     = var.POSTGRES_USER
   POSTGRES_PASSWORD = var.POSTGRES_PASSWORD
-  environment = "ci"
+  environment       = "ci"
 }
 
-module "ci_testrunner" {
+module "testrunner" {
   source = "../trunner_module"
 
-  AWS_ACCOUNT_ID    = var.AWS_ACCOUNT_ID
-  AWS_REPO          = var.AWS_REPO
+  AWS_ACCOUNT_ID = var.AWS_ACCOUNT_ID
+  AWS_REPO       = var.AWS_REPO
 
   environment = "ci"
 
-  depends_on = [ module.ci_infra ]
+  vpc            = module.infra.vpc
+  public_subnet2 = module.infra.public_subnet2
+  cluster        = module.infra.cluster
+  load_balancer  = module.infra.load_balancer
+
+  depends_on = [module.infra]
 }
-module "ci_app" {
+module "app" {
   source = "../app_module"
 
   POSTGRES_USER     = var.POSTGRES_USER
@@ -29,8 +34,19 @@ module "ci_app" {
   DJANGO_SECRET_KEY = var.DJANGO_SECRET_KEY
   AWS_ACCOUNT_ID    = var.AWS_ACCOUNT_ID
   AWS_REPO          = var.AWS_REPO
-  DJANGO_ENV = "development"
-  environment = "ci"
 
-  depends_on = [ module.ci_infra ]
+  DJANGO_ENV  = "development"
+  environment = "ci"
+  be_enable_execute_command = true
+
+  cluster         = module.infra.cluster
+  frontend_tg_arn = module.infra.frontend_tg_arn
+  public_subnet   = module.infra.public_subnet
+  public_subnet2  = module.infra.public_subnet2
+  front_sg_id     = module.infra.front_sg_id
+  db_address      = module.infra.db_address
+  backend_sg_id   = module.infra.backend_sg_id
+  backend_tg_arn  = module.infra.backend_tg_arn
+
+  depends_on = [module.infra]
 }

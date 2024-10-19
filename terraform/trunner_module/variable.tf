@@ -10,3 +10,30 @@ variable "environment" {
   type    = string
   default = "ci"
 }
+
+variable "vpc" {
+  type = object({
+    id = string
+  })
+}
+
+variable "public_subnet2" {
+  type = object({
+    id   = string
+    tags = map(string)
+  })
+}
+
+variable "cluster" {
+  type = object({
+    id   = string
+    name = string
+  })
+}
+
+variable "load_balancer" {
+  type = object({
+    id       = string
+    dns_name = string
+  })
+}

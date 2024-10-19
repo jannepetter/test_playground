@@ -1,32 +1,3 @@
-data "aws_vpc" "main" {
-  filter {
-    name   = "tag:Name"
-    values = ["tpg-vpc-${var.environment}"]
-  }
-}
-data "aws_subnet" "public_subnet" {
-  vpc_id = data.aws_vpc.main.id
-  filter {
-    name   = "tag:Name"
-    values = ["${var.environment}-public-subnet"]
-  }
-}
-data "aws_subnet" "public_subnet2" {
-  vpc_id = data.aws_vpc.main.id
-  filter {
-    name   = "tag:Name"
-    values = ["${var.environment}-public-subnet2"]
-  }
-}
-
-data "aws_ecs_cluster" "tpg_ci_cluster" {
-  cluster_name = "tpg-${var.environment}-cluster"
-}
-
-data "aws_lb_target_group" "frontend_tg" {
-  name        = "${var.environment}-frontend-tg"
-}
-
 resource "aws_ecs_task_definition" "frontend_task" {
   family                   = "frontend-task"
   network_mode             = "awsvpc"
@@ -52,26 +23,21 @@ resource "aws_ecs_task_definition" "frontend_task" {
   }])
 }
 
-data "aws_security_group" "front_sg" {
-  vpc_id = data.aws_vpc.main.id
-  name   = "${var.environment}-front-sg"
-}
-
 resource "aws_ecs_service" "frontend_service" {
   name            = "${var.environment}-frontend-service"
-  cluster         = data.aws_ecs_cluster.tpg_ci_cluster.id
+  cluster         = var.cluster.id
   task_definition = aws_ecs_task_definition.frontend_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [data.aws_subnet.public_subnet.id]
-    security_groups  = [data.aws_security_group.front_sg.id]
+    subnets          = [var.public_subnet.id]
+    security_groups  = [var.front_sg_id]
     assign_public_ip = true
   }
 
   load_balancer {
-    target_group_arn = data.aws_lb_target_group.frontend_tg.arn
+    target_group_arn = var.frontend_tg_arn
     container_name   = "${var.environment}-frontend"
     container_port   = 3000
   }
@@ -83,9 +49,6 @@ resource "aws_ecs_service" "frontend_service" {
   }
 }
 
-data "aws_lb_target_group" "backend_tg" {
-  name        = "${var.environment}-backend-tg"
-}
 
 resource "aws_cloudwatch_log_group" "ecs_backend_log_group" {
   name              = "/ecs/${var.environment}/backend-service"
@@ -134,10 +97,6 @@ resource "aws_iam_role_policy_attachment" "ssm_policy_policy_attachment" {
   role       = aws_iam_role.ecs_task_role.name
 }
 
-data "aws_db_instance" "postgresql_from_snapshot" {
-  db_instance_identifier = "tpg-${var.environment}-db"
-}
-
 resource "aws_ecs_task_definition" "backend_task" {
   family                   = "backend-task"
   network_mode             = "awsvpc"
@@ -168,7 +127,7 @@ resource "aws_ecs_task_definition" "backend_task" {
     environment = [
       {
         name  = "DB_HOST"
-        value = "${data.aws_db_instance.postgresql_from_snapshot.address}"
+        value = "${var.db_address}"
       },
       {
         name  = "POSTGRES_USER"
@@ -195,7 +154,7 @@ resource "aws_ecs_task_definition" "backend_task" {
         value = "backend.settings_ci"
       },
       {
-        name = "DJANGO_ENV",
+        name  = "DJANGO_ENV",
         value = var.DJANGO_ENV
       }
     ]
@@ -203,27 +162,23 @@ resource "aws_ecs_task_definition" "backend_task" {
   }])
 
 }
-data "aws_security_group" "backend_sg" {
-  vpc_id = data.aws_vpc.main.id
-  name   = "${var.environment}-backend-sg"
-}
 
 resource "aws_ecs_service" "backend_service" {
-  name            = "${var.environment}-backend-service"
-  cluster         = data.aws_ecs_cluster.tpg_ci_cluster.id
-  task_definition = aws_ecs_task_definition.backend_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-  enable_execute_command = true
-  
+  name                   = "${var.environment}-backend-service"
+  cluster                = var.cluster.id
+  task_definition        = aws_ecs_task_definition.backend_task.arn
+  desired_count          = 1
+  launch_type            = "FARGATE"
+  enable_execute_command = var.be_enable_execute_command
+
   network_configuration {
-    subnets          = [data.aws_subnet.public_subnet2.id]
-    security_groups  = [data.aws_security_group.backend_sg.id]
+    subnets          = [var.public_subnet2.id]
+    security_groups  = [var.backend_sg_id]
     assign_public_ip = true
   }
 
   load_balancer {
-    target_group_arn = data.aws_lb_target_group.backend_tg.arn
+    target_group_arn = var.backend_tg_arn
     container_name   = "${var.environment}-backend"
     container_port   = 8000
   }
