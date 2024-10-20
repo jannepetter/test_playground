@@ -11,44 +11,48 @@ variables {
   AWS_ACCOUNT_ID    = "123456789012"
   DJANGO_SECRET_KEY = "test"
 }
-run "test_production_env_infra" {
+run "test_ci_env_infra" {
 
   command = plan
 
   module {
-    source = "../production"
+    source = "../ci"
   }
 
   assert {
-    condition     = module.infra.vpc.tags.Name == "tpg-vpc-production"
+    condition     = module.infra.vpc.tags.Name == "tpg-vpc-ci"
     error_message = "Wrong vpc tag name"
   }
   assert {
-    condition     = module.infra.load_balancer.name == "production-loadbalancer"
+    condition     = module.infra.load_balancer.name == "ci-loadbalancer"
     error_message = "Wrong loadbalancer name"
   }
   assert {
-    condition     = module.infra.cluster.name == "tpg-production-cluster"
+    condition     = module.infra.cluster.name == "tpg-ci-cluster"
     error_message = "Wrong cluster name"
   }
   assert {
-    condition     = module.infra.public_subnet.tags.Name == "production-public-subnet"
+    condition     = module.infra.public_subnet.tags.Name == "ci-public-subnet"
     error_message = "Wrong subnet name"
   }
   assert {
-    condition     = module.infra.public_subnet2.tags.Name == "production-public-subnet2"
+    condition     = module.infra.public_subnet2.tags.Name == "ci-public-subnet2"
     error_message = "Wrong subnet name"
   }
 }
 
-run "test_production_env_apps" {
+run "test_ci_env_apps" {
 
   command = plan
 
   module {
-    source = "../production"
+    source = "../ci"
   }
 
+  assert {
+    condition     = module.infra.vpc.tags.Name == "tpg-vpc-ci"
+    error_message = "Returned wrong vpc tag name"
+  }
   assert {
     condition     = module.app.frontend_task.cpu == "256"
     error_message = "Frontend task returned wrong cpu amount"
@@ -59,28 +63,18 @@ run "test_production_env_apps" {
   }
   assert {
     condition     = module.app.frontend_service.enable_execute_command == false
-    error_message = "Execute command should not be enabled"
+    error_message = "Execute command should not be enabled for frontend"
   }
   assert {
     condition     = module.app.frontend_service.desired_count == 1
     error_message = "Desired count returned wrong value"
-  }
-
-  # Backend checks
-  assert {
-    condition     = module.app.backend_task.cpu == "256"
-    error_message = "Backend task returned wrong cpu amount"
-  }
-  assert {
-    condition     = module.app.backend_task.memory == "512"
-    error_message = "Backend task returned wrong memory amount"
   }
   assert {
     condition     = module.app.backend_service.desired_count == 1
     error_message = "Desired count returned wrong value"
   }
   assert {
-    condition     = module.app.backend_service.enable_execute_command == false
-    error_message = "Execute command should not be enabled"
+    condition     = module.app.backend_service.enable_execute_command == true
+    error_message = "Execute command should be enabled for backend"
   }
 }

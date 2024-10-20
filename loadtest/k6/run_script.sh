@@ -19,7 +19,7 @@ LOG_FILE="/var/log/script_log.log"
 LINES=50
 
 if [ "$RESET" = "cloud_reset" ]; then
-    sh /scripts/aws_reset_db.sh
+    sh /scripts/aws_reset_db.sh >> /proc/1/fd/1 2>&1
 elif [ "$RESET" = "reset" ]; then
     docker exec test_playground-server-1 /test_playground/backend/reset_db.sh
 fi
@@ -37,4 +37,4 @@ else
 fi
 
 echo $(date) >> $LOG_FILE
-tail -n $LINES $LOG_FILE >> /proc/1/fd/1
+tail -n $LINES $LOG_FILE >> /proc/1/fd/1 2>&1

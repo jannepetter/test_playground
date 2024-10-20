@@ -17,7 +17,7 @@ variable "vpc" {
   })
 }
 
-variable "public_subnet2" {
+variable "subnet" {
   type = object({
     id   = string
     tags = map(string)

@@ -31,7 +31,7 @@ resource "aws_ecs_service" "frontend_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [var.public_subnet.id]
+    subnets          = [var.subnet1.id]
     security_groups  = [var.front_sg_id]
     assign_public_ip = true
   }
@@ -172,7 +172,7 @@ resource "aws_ecs_service" "backend_service" {
   enable_execute_command = var.be_enable_execute_command
 
   network_configuration {
-    subnets          = [var.public_subnet2.id]
+    subnets          = [var.subnet2.id]
     security_groups  = [var.backend_sg_id]
     assign_public_ip = true
   }

@@ -47,14 +47,14 @@ variable "frontend_tg_arn" {
   type = string
 }
 
-variable "public_subnet" {
+variable "subnet1" {
   type = object({
     id   = string
     tags = map(string)
   })
 }
 
-variable "public_subnet2" {
+variable "subnet2" {
   type = object({
     id   = string
     tags = map(string)

@@ -88,9 +88,9 @@ resource "aws_lb" "my_load_balancer" {
 
   lifecycle {
     prevent_destroy = true
-    ignore_changes = [ 
+    ignore_changes = [
       security_groups
-     ]
+    ]
   }
 }
 

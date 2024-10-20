@@ -25,8 +25,8 @@ module "app" {
 
   cluster         = module.infra.cluster
   frontend_tg_arn = module.infra.frontend_tg_arn
-  public_subnet   = module.infra.public_subnet
-  public_subnet2  = module.infra.public_subnet2
+  subnet1         = module.infra.public_subnet
+  subnet2         = module.infra.public_subnet2
   front_sg_id     = module.infra.front_sg_id
   db_address      = module.infra.db_address
   backend_sg_id   = module.infra.backend_sg_id

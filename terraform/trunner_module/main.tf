@@ -105,7 +105,7 @@ resource "aws_ecs_service" "testrunner_service" {
   enable_execute_command = true
 
   network_configuration {
-    subnets          = [var.public_subnet2.id]
+    subnets          = [var.subnet.id]
     security_groups  = [aws_security_group.testrunner_sg.id]
     assign_public_ip = true
   }

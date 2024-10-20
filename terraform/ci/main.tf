@@ -17,10 +17,10 @@ module "testrunner" {
 
   environment = "ci"
 
-  vpc            = module.infra.vpc
-  public_subnet2 = module.infra.public_subnet2
-  cluster        = module.infra.cluster
-  load_balancer  = module.infra.load_balancer
+  vpc           = module.infra.vpc
+  subnet        = module.infra.public_subnet2
+  cluster       = module.infra.cluster
+  load_balancer = module.infra.load_balancer
 
   depends_on = [module.infra]
 }
@@ -35,14 +35,14 @@ module "app" {
   AWS_ACCOUNT_ID    = var.AWS_ACCOUNT_ID
   AWS_REPO          = var.AWS_REPO
 
-  DJANGO_ENV  = "development"
-  environment = "ci"
+  DJANGO_ENV                = "development"
+  environment               = "ci"
   be_enable_execute_command = true
 
   cluster         = module.infra.cluster
   frontend_tg_arn = module.infra.frontend_tg_arn
-  public_subnet   = module.infra.public_subnet
-  public_subnet2  = module.infra.public_subnet2
+  subnet1         = module.infra.public_subnet
+  subnet2         = module.infra.public_subnet2
   front_sg_id     = module.infra.front_sg_id
   db_address      = module.infra.db_address
   backend_sg_id   = module.infra.backend_sg_id

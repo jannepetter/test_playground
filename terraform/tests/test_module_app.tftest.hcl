@@ -22,13 +22,13 @@ variables {
     }
   }
   frontend_tg_arn = "arn:aws:elasticloadbalancing:eu-central-1:123456789012:targetgroup/my-target-group/1234567890123456"
-  public_subnet = {
+  subnet1 = {
     id = "1"
     tags = {
       Name = "test1"
     }
   }
-  public_subnet2 = {
+  subnet2 = {
     id = "2"
     tags = {
       Name = "test"
@@ -62,6 +62,20 @@ run "test_app_module" {
   }
   assert {
     condition     = aws_ecs_service.frontend_service.desired_count == 1
+    error_message = "Desired count returned wrong value"
+  }
+
+  # backend checks
+  assert {
+    condition     = aws_ecs_task_definition.backend_task.cpu == "256"
+    error_message = "Backend task returned wrong cpu amount"
+  }
+  assert {
+    condition     = aws_ecs_task_definition.backend_task.memory == "512"
+    error_message = "Backend task returned wrong memory amount"
+  }
+  assert {
+    condition     = aws_ecs_service.backend_service.desired_count == 1
     error_message = "Desired count returned wrong value"
   }
   assert {
