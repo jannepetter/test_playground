@@ -1,0 +1,50 @@
+services:
+  db:
+    build:
+      context: ./
+      dockerfile: Dockerfile.db
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:db
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:server
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    environment:
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - DB_HOST=${DB_HOST}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - JWT_VERIFYING_KEY=${JWT_VERIFYING_KEY}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_ENV=development
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:frontend
+    command: npm run start
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+
+  testrunner:
+    build:
+      context: ./loadtest/k6
+      dockerfile: ./container/Dockerfile.k6_slim
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:testrunner
+    environment:
+      - SET_CRONJOBS=cloud

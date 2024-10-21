@@ -1,6 +1,8 @@
 services:
   db:
-    image: postgres:15
+    build:
+      context: ./
+      dockerfile: Dockerfile.db
     ports:
       - 5432:5432
     environment:
@@ -13,19 +15,20 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: development
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
     environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - DB_HOST=db
       - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
       - JWT_SIGNING_KEY=your-signing-key
       - JWT_VERIFYING_KEY=your-verifying-key
       - DJANGO_SECRET_KEY=django-secret-key
+      - DJANGO_ENV=development
     depends_on:
       - db
       - rabbitmq
@@ -48,9 +51,11 @@ services:
     volumes:
       - ./backend:/test_playground/backend
     environment:
-      - POSTGRES_NAME=postgres
+      - DJANGO_SETTINGS_MODULE=backend.settings
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - DB_HOST=db
       - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
       - JWT_SIGNING_KEY=your-signing-key
       - JWT_VERIFYING_KEY=your-verifying-key
@@ -63,8 +68,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        BUILD_TYPE: development
     command: npm run dev
     ports:
       - 3000:3000
@@ -85,6 +88,18 @@ services:
       - NEXT_PUBLIC_SERVER_URL=http://server:8000
     depends_on:
       - frontend
+
+  testrunner:
+    build:
+      context: ./loadtest/k6
+      dockerfile: ./container/Dockerfile.k6
+    image: testrunner
+    volumes:
+      - ./loadtest/k6:/scripts
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TEST_URL=http://server:8000
+      - SET_CRONJOBS=0  #disabled by default -> set to local|cloud
 
 volumes:
   next_volume:

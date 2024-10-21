@@ -1,0 +1,32 @@
+FROM grafana/k6:0.53.0 AS builder
+
+FROM debian:bookworm-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    cron \
+    unzip \
+    ca-certificates \
+    nano \
+    less \
+    tini \
+    && apt-get clean
+
+RUN update-ca-certificates
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install
+
+RUN curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" \ 
+    -o "session-manager-plugin.deb" \
+    && dpkg -i session-manager-plugin.deb
+
+COPY --from=builder /usr/bin/k6 /usr/bin/k6
+RUN rm -rf /awscliv2.zip
+
+WORKDIR /scripts
+COPY . .
+
+ENTRYPOINT ["/usr/bin/tini", "--","/scripts/container/entry.sh"]
+CMD ["tail", "-f", "/dev/null"]
