@@ -18,8 +18,10 @@ echo "case: $CASE"
 LOG_FILE="/var/log/script_log.log"
 LINES=50
 
+source /etc/environment
+
 if [ "$RESET" = "cloud_reset" ]; then
-    sh /scripts/aws_reset_db.sh >> /proc/1/fd/1 2>&1
+    /usr/bin/bash /scripts/aws_reset_db.sh testrunner >> /proc/1/fd/1 2>&1
 elif [ "$RESET" = "reset" ]; then
     docker exec test_playground-server-1 /test_playground/backend/reset_db.sh
 fi
