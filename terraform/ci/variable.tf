@@ -24,13 +24,3 @@ variable "AWS_ACCOUNT_ID" {
 variable "AWS_REPO" {
   type = string
 }
-
-variable "environment" {
-  type    = string
-  default = "ci"
-}
-
-variable "DJANGO_ENV" {
-  type    = string
-  default = "development"
-}
