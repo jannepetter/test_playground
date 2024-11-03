@@ -33,7 +33,9 @@ def main():
 
     test_env = sys.argv[1] == "test"
 
-    cov_report = test_env and len(sys.argv) == 2  # user is running all the tests
+    cov_report = test_env and len(
+        sys.argv) == 2  # user is running all the tests
+
     if cov_report:
         min_threshold = 80
         cov = coverage.Coverage()

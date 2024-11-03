@@ -11,11 +11,11 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-jest.mock("../api/users", () => ({
+jest.mock("../../api/users", () => ({
   login: jest.fn(),
 }));
 
-jest.mock("../app/utils/storage", () => ({
+jest.mock("../../utils/storage", () => ({
   saveUserToLocalStorage: jest.fn(),
 }));
 

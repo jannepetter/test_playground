@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
         const response = await refreshedAccessToken(refreshToken);
         if (response.status === 200 && response?.data?.access) {
           const accessToken = response.data.access;
-          localStorage.setItem("access", accessToken);
+          window.localStorage.setItem("access", accessToken);
           error.config.headers.Authorization = "Bearer " + accessToken;
           return apiClient(error.config);
         }

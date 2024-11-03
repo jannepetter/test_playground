@@ -2,7 +2,7 @@
 
 import { login } from "@/api/users";
 import { useUserContext } from "@/context/user";
-import { saveUserToLocalStorage } from "@/app/utils/storage";
+import { saveUserToLocalStorage } from "@/utils/storage";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 

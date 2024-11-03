@@ -7,8 +7,10 @@ from backend.base.testcase import BaseTestCase
 from django.contrib.auth import (
     get_user_model,
 )
+from django.test import tag
 
 
+@tag("api", "integration")
 class TestBlogApi(BaseTestCase):
     """
     Api tests for blogs.
@@ -169,7 +171,8 @@ class TestBlogApi(BaseTestCase):
             title="some title", content="something", user=another_user
         )
 
-        data = {"title": "should not be updated", "content": "should not be updated"}
+        data = {"title": "should not be updated",
+                "content": "should not be updated"}
         with self.assertNumQueries(2):
             response = self.client.put(f"/api/blog/{blog.id}/", data)
             self.assertEqual(response.status_code, 403)

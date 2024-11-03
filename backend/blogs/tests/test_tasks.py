@@ -1,14 +1,10 @@
 from backend.base.testcase import BaseTestCase
 from blogs.tasks import create_tasks, subtask_a, subtask_b
 from unittest.mock import patch, call
-from celery.result import AsyncResult
-from django.test.utils import override_settings
-import time
-from celery.contrib.testing.worker import start_worker
-from backend.celery import app
-from django_celery_results.models import TaskResult
+from django.test import tag
 
 
+@tag("unit")
 class TestBlogTask(BaseTestCase):
     """
     Tests for blog tasks.
@@ -70,6 +66,7 @@ class TestBlogTask(BaseTestCase):
         self.assertEqual("Task A processed subtask_a", task.result)
 
     def test_subtask_b(self):
-        task = subtask_b.apply_async(args=["subtask_b"], eta="2050-01-01T00:00:00Z")
+        task = subtask_b.apply_async(
+            args=["subtask_b"], eta="2050-01-01T00:00:00Z")
         self.assertEqual("SUCCESS", task.status)
         self.assertEqual("Task B processed subtask_b", task.result)

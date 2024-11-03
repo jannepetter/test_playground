@@ -20,7 +20,7 @@ services:
       - 8000:8000
     environment:
       - DJANGO_SETTINGS_MODULE=backend.settings
-      - POSTGRES_NAME=postgres
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - DB_HOST=db
@@ -29,6 +29,8 @@ services:
       - JWT_VERIFYING_KEY=your-verifying-key
       - DJANGO_SECRET_KEY=django-secret-key
       - DJANGO_ENV=development
+    volumes:
+          - ./backend:/test_playground/backend
     depends_on:
       - db
       - rabbitmq
@@ -73,6 +75,8 @@ services:
       - 3000:3000
     environment:
       - NEXT_PUBLIC_SERVER_URL=http://localhost:8000
+    volumes:
+          - ./frontend:/test_playground/frontend
     depends_on:
       - server
 
