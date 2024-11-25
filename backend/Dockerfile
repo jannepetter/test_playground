@@ -22,7 +22,7 @@ RUN chsh -s /bin/bash vscode
 RUN groupadd docker && \
     usermod -aG docker vscode
 
-USER 1000
+USER vscode
 
 ENTRYPOINT [ "./entry.sh" ]
 CMD ["python", "manage.py", "runserver" , "0.0.0.0:8000"]

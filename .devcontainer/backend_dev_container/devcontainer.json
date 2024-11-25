@@ -23,15 +23,11 @@
         },
         "python.pythonPath": "/usr/local/bin/python",
         "python.testing.unittestArgs": ["-v", "-s", "./", "-p", "test_*.py"],
-        "terminal.integrated.shell.linux": "/bin/bash",
-        "python.linting.pylintPath": "/usr/local/bin/pylint",
-        "python.linting.pylintArgs": [
-          "--rcfile=${localWorkspaceFolder}/backend/.pylintrc"
-        ]
+        "terminal.integrated.shell.linux": "/bin/bash"
       },
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylint",
+        "charliermarsh.ruff",
         "ms-azuretools.vscode-docker",
         "rangav.vscode-thunder-client",
         "ms-python.black-formatter"
