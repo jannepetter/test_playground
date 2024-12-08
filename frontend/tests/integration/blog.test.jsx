@@ -7,7 +7,7 @@ import { UserProvider } from "@/context/user";
 import { deleteBlog, createBlog } from "@/api/blogs";
 import NewBlog from "@/components/blog/NewBlog";
 
-jest.mock("../api/blogs", () => ({
+jest.mock("../../api/blogs", () => ({
   deleteBlog: jest.fn(),
   createBlog: jest.fn(),
 }));

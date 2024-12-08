@@ -1,0 +1,7 @@
+ignore:
+  - package:
+      name: libexpat1
+      version: 2.5.0-1
+  - package:
+      name: libsqlite3-0
+      version: 3.40.1-2

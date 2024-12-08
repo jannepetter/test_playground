@@ -1,0 +1,14 @@
+
+[rules]
+
+# The app is a fake app with no real user traffic. Ignore a few rules
+skip-rules = [
+    "AC_AWS_0369",      # VPC flow logging 
+    "AC_AWS_0454",      # cloudwatch loggin for aws db
+    "AC_AWS_0492",      # target group on port 80, http               (fake app -> dont care)
+    "AC_AWS_0491",      # loadbalancer listener with http             (fake app -> dont care)
+    "AC_AWS_0052",      # automated backups                           (fake app -> dont care)
+    "AC_AWS_0228",      # unrestricted port 80 (http) to loadbalancer (fake app -> dont care)
+    "AC_AWS_0053",      # RDS database has IAM Authentication enabled (fake app -> dont care)
+    "AC_DOCKER_0002"    # Ensure apt is not used with RUN command for Docker file
+  ]

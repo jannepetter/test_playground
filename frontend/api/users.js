@@ -1,4 +1,4 @@
-import apiClient from "@/app/utils/fetcher";
+import apiClient from "@/utils/fetcher";
 
 export const login = async (username, password) => {
   const response = await apiClient.post("/api/token/", { username, password });

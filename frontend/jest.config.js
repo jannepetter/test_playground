@@ -11,8 +11,18 @@ const config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   testPathIgnorePatterns: ["e2e", "e2e-examples"],
-  // Add more setup options before each test is run
-  // setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  collectCoverageFrom: [
+    'components/**/*.{js,jsx}',
+    'utils/**/*.{js,jsx}',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  }
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

@@ -7,8 +7,10 @@ from django.contrib.auth import (
     get_user_model,
 )
 from rest_framework.exceptions import ErrorDetail
+from django.test import tag
 
 
+@tag("api", "integration")
 class TestUserApi(BaseTestCase):
     """
     Api tests for users.

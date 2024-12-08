@@ -20,38 +20,6 @@ services:
       - 8000:8000
     environment:
       - DJANGO_SETTINGS_MODULE=backend.settings
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - DB_HOST=db
-      - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
-      - JWT_SIGNING_KEY=your-signing-key
-      - JWT_VERIFYING_KEY=your-verifying-key
-      - DJANGO_SECRET_KEY=django-secret-key
-      - DJANGO_ENV=development
-    depends_on:
-      - db
-      - rabbitmq
-
-  rabbitmq:
-    image: rabbitmq:3.13.6-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: myuser
-      RABBITMQ_DEFAULT_PASS: mypassword
-
-  celery:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    command: celery -A backend worker --loglevel=info
-    volumes:
-      - ./backend:/test_playground/backend
-    environment:
-      - DJANGO_SETTINGS_MODULE=backend.settings
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -60,9 +28,43 @@ services:
       - JWT_SIGNING_KEY=your-signing-key
       - JWT_VERIFYING_KEY=your-verifying-key
       - DJANGO_SECRET_KEY=django-secret-key
+      - DJANGO_ENV=development
+    volumes:
+          - ./backend:/test_playground/backend
     depends_on:
       - db
-      - rabbitmq
+      # - rabbitmq
+
+  # rabbitmq:
+  #   image: rabbitmq:3.13.6-management
+  #   container_name: rabbitmq
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: myuser
+  #     RABBITMQ_DEFAULT_PASS: mypassword
+
+  # celery:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   command: celery -A backend worker --loglevel=info
+  #   volumes:
+  #     - ./backend:/test_playground/backend
+  #   environment:
+  #     - DJANGO_SETTINGS_MODULE=backend.settings
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - DB_HOST=db
+  #     - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
+  #     - JWT_SIGNING_KEY=your-signing-key
+  #     - JWT_VERIFYING_KEY=your-verifying-key
+  #     - DJANGO_SECRET_KEY=django-secret-key
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
 
   frontend:
     build:
@@ -73,33 +75,35 @@ services:
       - 3000:3000
     environment:
       - NEXT_PUBLIC_SERVER_URL=http://localhost:8000
+    volumes:
+          - ./frontend:/test_playground/frontend
     depends_on:
       - server
 
-  playwright:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.playwright
-    command: npm run start
-    volumes:
-      - ./frontend:/test_playground/frontend
-      - next_volume:/test_playground/frontend/.next
-    environment:
-      - NEXT_PUBLIC_SERVER_URL=http://server:8000
-    depends_on:
-      - frontend
+  # playwright:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.playwright
+  #   command: npm run start
+  #   volumes:
+  #     - ./frontend:/test_playground/frontend
+  #     - next_volume:/test_playground/frontend/.next
+  #   environment:
+  #     - NEXT_PUBLIC_SERVER_URL=http://server:8000
+  #   depends_on:
+  #     - frontend
 
-  testrunner:
-    build:
-      context: ./loadtest/k6
-      dockerfile: ./container/Dockerfile.k6
-    image: testrunner
-    volumes:
-      - ./loadtest/k6:/scripts
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - TEST_URL=http://server:8000
-      - SET_CRONJOBS=0  #disabled by default -> set to local|cloud
+  # testrunner:
+  #   build:
+  #     context: ./loadtest/k6
+  #     dockerfile: ./container/Dockerfile.k6
+  #   image: testrunner
+  #   volumes:
+  #     - ./loadtest/k6:/scripts
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - TEST_URL=http://server:8000
+  #     - SET_CRONJOBS=0  #disabled by default -> set to local|cloud
 
 volumes:
   next_volume:

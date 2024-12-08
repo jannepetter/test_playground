@@ -3,3 +3,4 @@ influxdb
 .env*
 .terraform*
 *terraform.tfstate*
+*.ruff_cache

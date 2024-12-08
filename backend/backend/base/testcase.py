@@ -15,6 +15,7 @@ from django_celery_results.models import TaskResult
 @override_settings(
     PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"],
     CELERY_TASK_ALWAYS_EAGER=True,
+    DEBUG=False,
     # CELERY_TASK_STORE_EAGER_RESULT=True,
     # CELERY_RESULT_EXTENDED=True,
     # CELERY_BROKER_URL="memory://",
@@ -57,7 +58,8 @@ class BaseTestCase(TestCase):
         cls.freezer.stop()
 
     def setUp(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token)
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + self.access_token)
 
     def switch_user(self, user):
         """
