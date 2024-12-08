@@ -8,8 +8,8 @@ ENV DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
 WORKDIR /test_playground/backend
 COPY ./requirements.txt .
 
-RUN apt-get update && apt-get install -y libpq-dev && \
-    pip3 install -r requirements.txt
+RUN apt-get update && apt-get install -y libpq-dev --no-install-recommends && \
+    pip3 install -r requirements.txt --no-cache-dir
 
 RUN groupadd -g ${GROUP_ID} vscode && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m vscode

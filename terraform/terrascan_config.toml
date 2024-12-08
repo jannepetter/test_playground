@@ -9,5 +9,6 @@ skip-rules = [
     "AC_AWS_0491",      # loadbalancer listener with http             (fake app -> dont care)
     "AC_AWS_0052",      # automated backups                           (fake app -> dont care)
     "AC_AWS_0228",      # unrestricted port 80 (http) to loadbalancer (fake app -> dont care)
-    "AC_AWS_0053"       # RDS database has IAM Authentication enabled (fake app -> dont care)
+    "AC_AWS_0053",      # RDS database has IAM Authentication enabled (fake app -> dont care)
+    "AC_DOCKER_0002"    # Ensure apt is not used with RUN command for Docker file
   ]

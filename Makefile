@@ -1,3 +1,5 @@
+TERRACONF := $(shell pwd)/terraform/terrascan_config.toml
+IMAGE ?= none
 
 terrascan_ci:
 	-@echo "Terrascan ci env"
@@ -13,11 +15,13 @@ tflint:
 	-@echo "Running tflint"
 	docker run --rm -v $(shell pwd)/terraform:/data ghcr.io/terraform-linters/tflint --recursive
 
-scan_docker:
-	-@echo "Scanning docker files with terrascan"
-	docker run --rm -v $(shell pwd)/backend:/project tenable/terrascan scan \
-	 -i docker -t docker -f /project/Dockerfile -l error --output json
-	docker run --rm -v $(shell pwd)/frontend:/project tenable/terrascan scan \
-	 -i docker -t docker -f /project/Dockerfile.prod -l error --output json
-	docker run --rm -v $(shell pwd)/loadtest/k6/container:/project tenable/terrascan scan \
-	 -i docker -t docker -f /project/Dockerfile.k6_slim -l error --output json
+scan_with_grype:
+	# usage: scan_with_grype IMAGE=<the image>
+	-@echo "Scanning with grype"
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(shell pwd)/grype.yaml:/config/grype.yaml \
+	anchore/grype:latest $(IMAGE) -c /config/grype.yaml --only-fixed -f high
+
+trivy_scan:
+	# usage: trivy_scan IMAGE=<the image>
+	-@echo "Scanning with trivy"
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image $(IMAGE) -q
