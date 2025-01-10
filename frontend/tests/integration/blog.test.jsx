@@ -4,18 +4,13 @@ import BlogList from "@/components/blog/BlogList";
 import React from "react";
 import BlogDetail from "@/components/blog/BlogDetail";
 import { UserProvider } from "@/context/user";
-import { deleteBlog, createBlog } from "@/api/blogs";
+import { deleteBlog, createBlog, getBlogs } from "@/api/blogs";
 import NewBlog from "@/components/blog/NewBlog";
 
 jest.mock("../../api/blogs", () => ({
   deleteBlog: jest.fn(),
   createBlog: jest.fn(),
-}));
-
-jest.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
+  getBlogs: jest.fn(),
 }));
 
 const blogs = [
@@ -39,15 +34,31 @@ const blogs = [
   },
 ];
 
+
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
+}));
+
+
 describe("Blog components", () => {
-  it("BlogList renders a list of links", () => {
-    render(<BlogList blogList={blogs} />);
-    const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(2);
-    expect(links[0]).toHaveAttribute("href", "/blogs/1");
-    expect(links[1]).toHaveAttribute("href", "/blogs/2");
-    expect(screen.getByText("blog title")).toBeInTheDocument();
-    expect(screen.getByText("test blog")).toBeInTheDocument();
+  it("BlogList renders a list of links", async () => {
+    getBlogs.mockResolvedValue({data:{
+      count:2,
+      next:null,
+      previous:null,
+      results:blogs
+    }})
+    render(<BlogList/>);
+    await waitFor(() => {
+      const links = screen.getAllByRole("link");
+      expect(links).toHaveLength(2);
+      expect(links[0]).toHaveAttribute("href", "/blogs/1");
+      expect(links[1]).toHaveAttribute("href", "/blogs/2");
+      expect(screen.getByText("blog title")).toBeInTheDocument();
+      expect(screen.getByText("test blog")).toBeInTheDocument();
+    });
   });
 
   it("Blogdetails gets rendered correctly for the blog creator", () => {

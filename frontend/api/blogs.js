@@ -1,8 +1,11 @@
 import apiClient from "@/utils/fetcher";
 
-export const getBlogs = async () => {
-  const response = await apiClient.get("/api/blog/");
-  return response;
+export const getBlogs = async (page) => {
+  
+  if(page){
+    return await apiClient.get(`/api/blog/?page=${page}`)
+  }
+  return await apiClient.get("/api/blog/");
 };
 
 export const getBlogDetail = async (blogId) => {
