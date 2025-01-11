@@ -4,13 +4,12 @@ import { useRouter } from "next/navigation";
 import { getBlogs } from "@/api/blogs";
 import Pagination from "../Pagination";
 
-
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
   const router = useRouter();
   useEffect(() => {
     getBlogs()
-    .then((r) => {
+      .then((r) => {
         setBlogs(r.data);
       })
       .catch((e) => {
@@ -25,14 +24,12 @@ const BlogList = () => {
       });
   }, [router]);
 
-
-  const onUpdatePage = async(page)=>{
-
-    if(page){
-      const newBlogs = await getBlogs(page)
-      setBlogs(newBlogs.data)
+  const onUpdatePage = async (page) => {
+    if (page) {
+      const newBlogs = await getBlogs(page);
+      setBlogs(newBlogs.data);
     }
-  }
+  };
   return (
     <div className="mx-auto max-w-md">
       <h1 className="my-10">Blogs</h1>
