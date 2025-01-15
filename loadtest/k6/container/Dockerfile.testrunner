@@ -1,7 +1,6 @@
 FROM grafana/k6:0.53.0 AS builder
 
-# FROM debian:bookworm-slim
-FROM node:20
+FROM mcr.microsoft.com/playwright:v1.49.1-jammy
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -16,7 +15,7 @@ RUN apt-get update && \
     && apt-get clean
 
 WORKDIR /app
-RUN npm install @playwright/test && npx playwright install --with-deps chromium
+RUN npm install @playwright/test@1.49.1
 
 RUN update-ca-certificates
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
@@ -40,8 +39,6 @@ COPY ./frontend/reset_db.sh .
 
 WORKDIR /scripts
 
-ENV CI=true
-
 ENTRYPOINT ["/usr/bin/tini", "--","/scripts/container/entry.sh"]
-# CMD ["xvfb-run", "--server-args=-screen 0 1920x1080x24", "tail", "-f", "/dev/null"]
+
 CMD ["tail", "-f", "/dev/null"]

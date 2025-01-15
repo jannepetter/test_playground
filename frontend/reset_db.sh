@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker-compose exec -T server sh reset_db.sh
+docker exec test_playground-server-1 sh reset_db.sh

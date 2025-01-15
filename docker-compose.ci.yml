@@ -36,6 +36,8 @@ services:
       dockerfile: Dockerfile.prod
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:frontend
     command: npm run start
+    environment:
+      - NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
     ports:
       - 3000:3000
     depends_on:
@@ -43,8 +45,12 @@ services:
 
   testrunner:
     build:
-      context: ./loadtest/k6
-      dockerfile: ./container/Dockerfile.k6_slim
+      context: ./
+      dockerfile: ./loadtest/k6/container/Dockerfile.testrunner
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:testrunner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      - TEST_URL=${TEST_URL}
+      - BASE_URL=${BASE_URL}
       - SET_CRONJOBS=cloud

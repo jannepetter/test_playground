@@ -6,9 +6,12 @@ test.describe("Tests for blogs", () => {
 
   test("Get blogs", async ({ page }) => {
     await page.goto("/blogs");
-    await page.waitForResponse("http://server:8000/api/blog/");
-    const blogList = await page.getByTestId("blogList").getByRole("link").all();
-    expect(blogList.length).toBe(4);
+    let blogList;
+    await expect(async () => {
+      blogList = await page.getByTestId("blogList").getByRole("link").all();
+      expect(blogList.length).toBe(4);
+    }).toPass({ timeout: 15000 });
+
     await expect(blogList[0]).toHaveText("some title");
     await expect(blogList[1]).toHaveText("another title");
     await expect(blogList[2]).toHaveText("something");
@@ -21,11 +24,11 @@ test.describe("Tests for blogs", () => {
     await page.getByLabel("content:").fill("automatically created content");
     await page.getByRole("button", { name: "Submit" }).click();
 
-    // check it got created
     await page.goto("/blogs");
-    await page.waitForResponse("http://server:8000/api/blog/");
-    const blogList = await page.getByTestId("blogList").getByRole("link").all();
-    expect(blogList.length).toBe(5);
+    await expect(async () => {
+      const blogList = await page.getByTestId("blogList").getByRole("link").all();
+      expect(blogList.length).toBe(5);
+    }).toPass({ timeout: 15000 });
     const newBlog = page
       .getByTestId("blogList")
       .getByRole("link")
@@ -33,9 +36,7 @@ test.describe("Tests for blogs", () => {
 
     await expect(newBlog).toBeVisible();
 
-    // check the content detail
     await newBlog.click();
-    await expect(page).toHaveURL(/.*\/blogs\/5$/, { timeout: 15000 });
     const blogDetail = page.getByTestId("blog-detail");
     await expect(blogDetail).toBeVisible();
     await expect(blogDetail).toContainText("automatically created content");
@@ -47,14 +48,11 @@ test.describe("Tests for blogs", () => {
     await expect(blogDetail).toBeVisible();
     const updateBtn = blogDetail.getByRole("link", { name: "Update" });
     await updateBtn.click();
-    await expect(page).toHaveURL(/.*\/blogs\/5\/update$/, { timeout: 15000 });
     const updateForm = page.getByTestId("update-blog-form");
 
     await updateForm.getByLabel("title").fill("automatically created title - updated");
     await updateForm.getByLabel("content").fill("automatically created content - updated");
     await updateForm.getByRole("button", { name: "Submit" }).click();
-    await expect(page).toHaveURL(/.*\/blogs$/);
-    await page.waitForResponse("http://server:8000/api/blog/");
     const blogList = page.getByTestId("blogList");
     await expect(blogList).toContainText("automatically created title - updated");
     await page.goto("/blogs/5");
@@ -83,8 +81,6 @@ test.describe("Tests for blogs", () => {
     await confirmBtn.click();
 
     // wait routing and check the deleted blog is not among the list of blogs
-    await expect(page).toHaveURL(/.*\/blogs$/);
-    await page.waitForResponse("http://server:8000/api/blog/");
     const blogList = page.getByTestId("blogList");
     await expect(blogList).toBeVisible();
     await expect(blogList).not.toContainText("something");

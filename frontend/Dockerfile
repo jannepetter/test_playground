@@ -1,17 +1,15 @@
 FROM node:20
 
 WORKDIR /test_playground/frontend
-COPY . .
 
+COPY package.json package-lock.json ./
 RUN npm ci
 
-RUN chown -R node:node /test_playground/frontend
+COPY . .
 RUN chsh -s /bin/bash node
 
-ENV PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright/
 
 RUN groupadd docker && \
-usermod -aG docker node && \
-npx playwright install --with-deps chromium
+usermod -aG docker node
 
 USER node

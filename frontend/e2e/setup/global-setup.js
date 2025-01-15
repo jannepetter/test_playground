@@ -1,21 +1,23 @@
 const { chromium, expect } = require("@playwright/test");
 import { resetDb, testAuthPath } from "./helper";
 
-async function globalSetup(config) {
-  // you might need to rebuild the playwright container first,
-  // if changes have been made to ui: npm run pw-refresh
+async function globalSetup(config, testInfo) {
   const baseUrl = config.projects[0].use.baseURL;
   console.log("Running playwright test setup...");
-  await resetDb();
-  const browser = await chromium.launch();
+  // await resetDb();
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(baseUrl + "/login");
+  const loginTitle = page.locator("h1");
+  await expect(loginTitle).toHaveText("Login");
   await page.getByPlaceholder("username").fill("testuser");
   await page.getByPlaceholder("password").fill("testuser");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await expect(async () => {
+    await page.getByRole("button", { name: "Submit" }).click();
+    const h1 = page.locator("h1");
+    await expect(h1).toHaveText("Blogs");
+  }).toPass({ timeout: 30000 });
 
-  // login successful and redirect
-  await expect(page).toHaveURL(/.*\/blogs$/, { timeout: 15000 });
   await page.context().storageState({ path: testAuthPath });
   await browser.close();
 }

@@ -4,3 +4,4 @@ influxdb
 .terraform*
 *terraform.tfstate*
 *.ruff_cache
+*.next

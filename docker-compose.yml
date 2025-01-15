@@ -30,7 +30,7 @@ services:
       - DJANGO_SECRET_KEY=django-secret-key
       - DJANGO_ENV=development
     volumes:
-          - ./backend:/test_playground/backend
+      - ./backend:/test_playground/backend
     depends_on:
       - db
 
@@ -44,34 +44,27 @@ services:
     environment:
       - NEXT_PUBLIC_SERVER_URL=http://localhost:8000
     volumes:
-          - ./frontend:/test_playground/frontend
+      - ./frontend:/test_playground/frontend
     depends_on:
       - server
 
-  playwright:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.playwright
-    command: npm run start
-    volumes:
-      - ./frontend:/test_playground/frontend
-      - next_volume:/test_playground/frontend/.next
-    environment:
-      - NEXT_PUBLIC_SERVER_URL=http://server:8000
-    depends_on:
-      - frontend
-
   testrunner:
     build:
-      context: ./loadtest/k6
-      dockerfile: ./container/Dockerfile.k6
+      context: ./
+      dockerfile: ./loadtest/k6/container/Dockerfile.testrunner
     image: testrunner
     volumes:
       - ./loadtest/k6:/scripts
+      - ./frontend/e2e:/app/e2e
+      - ./frontend/playwright.config.js:/app/playwright.config.js
       - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9323:9323"
     environment:
       - TEST_URL=http://server:8000
-      - SET_CRONJOBS=0  #disabled by default -> set to local|cloud
+      - BASE_URL=http://frontend:3000
+      - SET_CRONJOBS=0 #disabled by default -> set to local|cloud
+      - PLAYWRIGHT_HTML_HOST=0.0.0.0
 
 volumes:
   next_volume:
