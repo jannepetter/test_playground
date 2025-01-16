@@ -12,4 +12,7 @@ RUN chsh -s /bin/bash node
 RUN groupadd docker && \
 usermod -aG docker node
 
+ARG APP_ENV
+ENV NEXT_PUBLIC_APP_ENV=$APP_ENV
+
 USER node

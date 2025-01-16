@@ -84,7 +84,9 @@ test.describe("Tests for blogs", () => {
     const blogList = page.getByTestId("blogList");
     await expect(blogList).toBeVisible();
     await expect(blogList).not.toContainText("something");
-    const blogLinks = await blogList.getByRole("link").all();
-    expect(blogLinks.length).toBe(4);
+    await expect(async () => {
+      const blogLinks = await blogList.getByRole("link").all();
+      expect(blogLinks.length).toBe(4);
+    }).toPass({ timeout: 15000 });
   });
 });

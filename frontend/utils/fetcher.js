@@ -1,13 +1,26 @@
 import { refreshedAccessToken } from "@/api/users";
 import axios from "axios";
 
+const getServerUrl = () => {
+  switch (process.env.NEXT_PUBLIC_APP_ENV) {
+    case "CI":
+      return "http://server:8000";
+
+    case "ENV":
+      return "";
+
+    default:
+      return "http://localhost:8000";
+  }
+};
+
 const createClient = () => {
   const headers = {
     "Content-Type": "application/json",
   };
 
   const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
+    baseURL: getServerUrl(),
     timeout: 60000,
     headers: headers,
   });

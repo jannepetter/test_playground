@@ -38,11 +38,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        APP_ENV: ${APP_ENV}
     command: npm run dev
     ports:
       - 3000:3000
     environment:
-      - NEXT_PUBLIC_SERVER_URL=http://localhost:8000
+      - APP_ENV=${APP_ENV}
     volumes:
       - ./frontend:/test_playground/frontend
     depends_on:
@@ -61,8 +63,8 @@ services:
     ports:
       - "9323:9323"
     environment:
-      - TEST_URL=http://server:8000
-      - BASE_URL=http://frontend:3000
+      - TEST_URL=${TEST_URL}
+      - APP_ENV=${APP_ENV}
       - SET_CRONJOBS=0 #disabled by default -> set to local|cloud
       - PLAYWRIGHT_HTML_HOST=0.0.0.0
 

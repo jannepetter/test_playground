@@ -8,7 +8,9 @@ COPY . .
 # RUN chown -R node:node /test_playground/frontend
 RUN chsh -s /bin/bash node
 
-ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+ARG APP_ENV
+ENV NEXT_PUBLIC_APP_ENV=$APP_ENV
+
 RUN npm run build
 
 USER node

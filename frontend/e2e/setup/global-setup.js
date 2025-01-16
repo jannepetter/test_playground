@@ -4,7 +4,7 @@ import { resetDb, testAuthPath } from "./helper";
 async function globalSetup(config, testInfo) {
   const baseUrl = config.projects[0].use.baseURL;
   console.log("Running playwright test setup...");
-  // await resetDb();
+  await resetDb();
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(baseUrl + "/login");

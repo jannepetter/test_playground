@@ -39,6 +39,9 @@ COPY ./frontend/reset_db.sh .
 
 WORKDIR /scripts
 
+ARG APP_ENV
+ENV NEXT_PUBLIC_APP_ENV=$APP_ENV
+
 ENTRYPOINT ["/usr/bin/tini", "--","/scripts/container/entry.sh"]
 
 CMD ["tail", "-f", "/dev/null"]
