@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        django_env = os.environ.get("DJANGO_ENV")
+        django_env = os.environ.get("DJANGO_ENV", "production")
 
         if django_env == "development":
             sql_flush_commands = sql_flush(

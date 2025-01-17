@@ -6,29 +6,28 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     volumes:
       - ./backend/pgdata:/var/lib/postgresql/data
   server:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: ${BACKEND_DOCKERFILE:-Dockerfile}
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
     environment:
-      - DJANGO_SETTINGS_MODULE=backend.settings
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - DB_HOST=db
-      - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
-      - JWT_SIGNING_KEY=your-signing-key
-      - JWT_VERIFYING_KEY=your-verifying-key
-      - DJANGO_SECRET_KEY=django-secret-key
-      - DJANGO_ENV=development
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-backend.settings}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - JWT_VERIFYING_KEY=${JWT_VERIFYING_KEY}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_ENV=${DJANGO_ENV:-development}
     volumes:
       - ./backend:/test_playground/backend
     depends_on:
@@ -37,7 +36,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile}
       args:
         APP_ENV: ${APP_ENV}
     command: npm run dev
@@ -53,7 +52,9 @@ services:
   testrunner:
     build:
       context: ./
-      dockerfile: ./loadtest/k6/container/Dockerfile.testrunner
+      dockerfile: ./loadtest/k6/container/${TESTRUNNER_DOCKERFILE:-Dockerfile.testrunner}
+      args:
+        APP_ENV: ${APP_ENV}
     image: testrunner
     volumes:
       - ./loadtest/k6:/scripts

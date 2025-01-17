@@ -12,7 +12,7 @@ services:
   server:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: ${BACKEND_DOCKERFILE:-Dockerfile}
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:server
     command: python manage.py runserver 0.0.0.0:8000
     ports:
@@ -21,19 +21,19 @@ services:
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
-      - DB_HOST=${DB_HOST}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=${DB_HOST}
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
       - JWT_VERIFYING_KEY=${JWT_VERIFYING_KEY}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DJANGO_ENV=development
+      - DJANGO_ENV=${DJANGO_ENV:-development}
     depends_on:
       - db
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.prod
+      dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile.ci}
       args:
         APP_ENV: ${APP_ENV}
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:frontend
@@ -48,7 +48,7 @@ services:
   testrunner:
     build:
       context: ./
-      dockerfile: ./loadtest/k6/container/Dockerfile.testrunner
+      dockerfile: ./loadtest/k6/container/${TESTRUNNER_DOCKERFILE:-Dockerfile.testrunner}
       args:
         APP_ENV: ${APP_ENV}
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}:testrunner
