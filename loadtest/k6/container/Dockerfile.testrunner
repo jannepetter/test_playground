@@ -1,6 +1,6 @@
 FROM grafana/k6:0.53.0 AS builder
 
-FROM debian:bookworm-slim
+FROM mcr.microsoft.com/playwright:v1.49.1-jammy
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -14,6 +14,9 @@ RUN apt-get update && \
     docker.io \
     && apt-get clean
 
+WORKDIR /app
+RUN npm install @playwright/test@1.49.1
+
 RUN update-ca-certificates
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
@@ -24,10 +27,21 @@ RUN curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubunt
     && dpkg -i session-manager-plugin.deb
 
 COPY --from=builder /usr/bin/k6 /usr/bin/k6
-RUN rm -rf /awscliv2.zip
+RUN rm -rf /app/awscliv2.zip
 
 WORKDIR /scripts
-COPY . .
+COPY ../loadtest/k6 .
+
+WORKDIR /app
+COPY ./frontend/e2e ./e2e
+COPY ./frontend/playwright.config.js .
+COPY ./frontend/reset_db.sh .
+
+WORKDIR /scripts
+
+ARG APP_ENV
+ENV NEXT_PUBLIC_APP_ENV=$APP_ENV
 
 ENTRYPOINT ["/usr/bin/tini", "--","/scripts/container/entry.sh"]
+
 CMD ["tail", "-f", "/dev/null"]

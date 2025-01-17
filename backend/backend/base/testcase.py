@@ -9,17 +9,11 @@ from django.contrib.auth import (
 from freezegun import freeze_time
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.test import APIClient
-from django_celery_results.models import TaskResult
 
 
 @override_settings(
     PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"],
-    CELERY_TASK_ALWAYS_EAGER=True,
     DEBUG=False,
-    # CELERY_TASK_STORE_EAGER_RESULT=True,
-    # CELERY_RESULT_EXTENDED=True,
-    # CELERY_BROKER_URL="memory://",
-    # CELERY_RESULT_BACKEND="cache+memory://",
 )
 class BaseTestCase(TestCase):
     """
@@ -82,16 +76,3 @@ class BaseTestCase(TestCase):
         """
         self.frozen_time.move_to(time_str)
 
-    def extract_task_results(self):
-        queryset = TaskResult.objects.all()
-        return [
-            {
-                "task_name": i.task_name,
-                "task_args": i.task_args,
-                "task_kwargs": i.task_kwargs,
-                "status": i.status,
-                "date_done": i.date_done.isoformat(),
-                "result": i.result,
-            }
-            for i in queryset
-        ]

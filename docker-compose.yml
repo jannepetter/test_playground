@@ -6,104 +6,68 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     volumes:
       - ./backend/pgdata:/var/lib/postgresql/data
   server:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: ${BACKEND_DOCKERFILE:-Dockerfile}
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
     environment:
-      - DJANGO_SETTINGS_MODULE=backend.settings
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - DB_HOST=db
-      - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
-      - JWT_SIGNING_KEY=your-signing-key
-      - JWT_VERIFYING_KEY=your-verifying-key
-      - DJANGO_SECRET_KEY=django-secret-key
-      - DJANGO_ENV=development
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-backend.settings}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - JWT_SIGNING_KEY=${JWT_SIGNING_KEY}
+      - JWT_VERIFYING_KEY=${JWT_VERIFYING_KEY}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_ENV=${DJANGO_ENV:-development}
     volumes:
-          - ./backend:/test_playground/backend
+      - ./backend:/test_playground/backend
     depends_on:
       - db
-      # - rabbitmq
-
-  # rabbitmq:
-  #   image: rabbitmq:3.13.6-management
-  #   container_name: rabbitmq
-  #   ports:
-  #     - "5672:5672"
-  #     - "15672:15672"
-  #   environment:
-  #     RABBITMQ_DEFAULT_USER: myuser
-  #     RABBITMQ_DEFAULT_PASS: mypassword
-
-  # celery:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   command: celery -A backend worker --loglevel=info
-  #   volumes:
-  #     - ./backend:/test_playground/backend
-  #   environment:
-  #     - DJANGO_SETTINGS_MODULE=backend.settings
-  #     - POSTGRES_DB=postgres
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - DB_HOST=db
-  #     - CELERY_BROKER_URL=amqp://myuser:mypassword@rabbitmq:5672//
-  #     - JWT_SIGNING_KEY=your-signing-key
-  #     - JWT_VERIFYING_KEY=your-verifying-key
-  #     - DJANGO_SECRET_KEY=django-secret-key
-  #   depends_on:
-  #     - db
-  #     - rabbitmq
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile}
+      args:
+        APP_ENV: ${APP_ENV}
     command: npm run dev
     ports:
       - 3000:3000
     environment:
-      - NEXT_PUBLIC_SERVER_URL=http://localhost:8000
+      - APP_ENV=${APP_ENV}
     volumes:
-          - ./frontend:/test_playground/frontend
+      - ./frontend:/test_playground/frontend
     depends_on:
       - server
 
-  # playwright:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile.playwright
-  #   command: npm run start
-  #   volumes:
-  #     - ./frontend:/test_playground/frontend
-  #     - next_volume:/test_playground/frontend/.next
-  #   environment:
-  #     - NEXT_PUBLIC_SERVER_URL=http://server:8000
-  #   depends_on:
-  #     - frontend
-
-  # testrunner:
-  #   build:
-  #     context: ./loadtest/k6
-  #     dockerfile: ./container/Dockerfile.k6
-  #   image: testrunner
-  #   volumes:
-  #     - ./loadtest/k6:/scripts
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   environment:
-  #     - TEST_URL=http://server:8000
-  #     - SET_CRONJOBS=0  #disabled by default -> set to local|cloud
+  testrunner:
+    build:
+      context: ./
+      dockerfile: ./loadtest/k6/container/${TESTRUNNER_DOCKERFILE:-Dockerfile.testrunner}
+      args:
+        APP_ENV: ${APP_ENV}
+    image: testrunner
+    volumes:
+      - ./loadtest/k6:/scripts
+      - ./frontend/e2e:/app/e2e
+      - ./frontend/playwright.config.js:/app/playwright.config.js
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9323:9323
+    environment:
+      - TEST_URL=${TEST_URL}
+      - APP_ENV=${APP_ENV}
+      - SET_CRONJOBS=${SET_CRONJOBS:-0} #disabled by default -> set to local|cloud
+      - PLAYWRIGHT_HTML_HOST=0.0.0.0
 
 volumes:
   next_volume:

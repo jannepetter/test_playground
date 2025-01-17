@@ -10,23 +10,40 @@ import path from "path";
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
+const getBaseUrl = () => {
+  switch (process.env.APP_ENV) {
+    case "CI":
+      return "http://frontend:3000";
+
+    case "ENV":
+      return "";
+
+    default:
+      return "http://localhost:3000";
+  }
+};
 module.exports = defineConfig({
   testDir: "./e2e",
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  // forbidOnly: !!process.env.CI,
+  // /* Retry on CI only */
+  // retries: process.env.CI ? 2 : 0,
+  retries: 0,
+  // /* Opt out of parallel tests on CI. */
+  // workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   globalSetup: path.join(__dirname, "/e2e/setup/global-setup.js"),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  // reporter: "html",
+  reporter: [["html", { open: "always" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://playwright:3000",
+    baseURL: getBaseUrl(),
+    screenshot: "only-on-failure",
+    // headless: false,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",

@@ -32,30 +32,36 @@ class TestBlogApi(BaseTestCase):
         Test getting a list of blogs.
         """
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             response = self.client.get("/api/blog/")
             self.assertEqual(response.status_code, 200)
 
             data = response.data
-            self.assertListEqual(
-                [
-                    {
-                        "id": data[0]["id"],
-                        "title": "test blog1",
-                        "content": "test content1",
-                        "created_at": "2023-08-12T10:30:00.120000Z",
-                        "updated_at": "2023-08-12T10:30:00.120000Z",
-                        "user": {"id": self.user.id, "username": self.user.username},
-                    },
-                    {
-                        "id": data[1]["id"],
-                        "title": "test blog2",
-                        "content": "test content2",
-                        "created_at": "2023-08-12T10:30:00.120000Z",
-                        "updated_at": "2023-08-12T10:30:00.120000Z",
-                        "user": {"id": self.user.id, "username": self.user.username},
-                    },
-                ],
+            self.assertDictEqual(
+                {
+                    "count": 2,
+                    "next": None,
+                    "previous": None,
+                    "results":
+                    [
+                        {
+                            "id": data["results"][0]["id"],
+                            "title": "test blog1",
+                            "content": "test content1",
+                            "created_at": "2023-08-12T10:30:00.120000Z",
+                            "updated_at": "2023-08-12T10:30:00.120000Z",
+                            "user": {"id": self.user.id, "username": self.user.username},
+                        },
+                        {
+                            "id": data["results"][1]["id"],
+                            "title": "test blog2",
+                            "content": "test content2",
+                            "created_at": "2023-08-12T10:30:00.120000Z",
+                            "updated_at": "2023-08-12T10:30:00.120000Z",
+                            "user": {"id": self.user.id, "username": self.user.username},
+                        },
+                    ]
+                },
                 data,
             )
 
@@ -93,46 +99,51 @@ class TestBlogApi(BaseTestCase):
         Blog.objects.create(
             title="additional blog2", content="additional content2", user=self.user
         )
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             response = self.client.get("/api/blog/")
             self.assertEqual(response.status_code, 200)
 
             data = response.data
-            self.assertListEqual(
-                [
-                    {
-                        "id": data[0]["id"],
-                        "title": "test blog1",
-                        "content": "test content1",
-                        "created_at": "2023-08-12T10:30:00.120000Z",
-                        "updated_at": "2023-08-12T10:30:00.120000Z",
-                        "user": {"id": self.user.id, "username": "testuser"},
-                    },
-                    {
-                        "id": data[1]["id"],
-                        "title": "test blog2",
-                        "content": "test content2",
-                        "created_at": "2023-08-12T10:30:00.120000Z",
-                        "updated_at": "2023-08-12T10:30:00.120000Z",
-                        "user": {"id": self.user.id, "username": "testuser"},
-                    },
-                    {
-                        "id": data[2]["id"],
-                        "title": "additional blog1",
-                        "content": "additional content1",
-                        "created_at": "2023-08-12T10:30:00.120000Z",
-                        "updated_at": "2023-08-12T10:30:00.120000Z",
-                        "user": {"id": self.user.id, "username": "testuser"},
-                    },
-                    {
-                        "id": data[3]["id"],
-                        "title": "additional blog2",
-                        "content": "additional content2",
-                        "created_at": "2023-08-12T10:30:00.120000Z",
-                        "updated_at": "2023-08-12T10:30:00.120000Z",
-                        "user": {"id": self.user.id, "username": "testuser"},
-                    },
-                ],
+            self.assertDictEqual(
+                {
+                    "count": 4,
+                    "next": None,
+                    "previous": None,
+                    "results":
+                    [
+                        {
+                            "id": data["results"][0]["id"],
+                            "title": "test blog1",
+                            "content": "test content1",
+                            "created_at": "2023-08-12T10:30:00.120000Z",
+                            "updated_at": "2023-08-12T10:30:00.120000Z",
+                            "user": {"id": self.user.id, "username": "testuser"},
+                        },
+                        {
+                            "id": data["results"][1]["id"],
+                            "title": "test blog2",
+                            "content": "test content2",
+                            "created_at": "2023-08-12T10:30:00.120000Z",
+                            "updated_at": "2023-08-12T10:30:00.120000Z",
+                            "user": {"id": self.user.id, "username": "testuser"},
+                        },
+                        {
+                            "id": data["results"][2]["id"],
+                            "title": "additional blog1",
+                            "content": "additional content1",
+                            "created_at": "2023-08-12T10:30:00.120000Z",
+                            "updated_at": "2023-08-12T10:30:00.120000Z",
+                            "user": {"id": self.user.id, "username": "testuser"},
+                        },
+                        {
+                            "id": data["results"][3]["id"],
+                            "title": "additional blog2",
+                            "content": "additional content2",
+                            "created_at": "2023-08-12T10:30:00.120000Z",
+                            "updated_at": "2023-08-12T10:30:00.120000Z",
+                            "user": {"id": self.user.id, "username": "testuser"},
+                        },
+                    ]},
                 data,
             )
 

@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "./global-styles.css";
 import React from "react";
 import Navigation from "@/components/Navigation";
 import { UserProvider } from "@/context/user";

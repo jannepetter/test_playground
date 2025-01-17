@@ -16,11 +16,7 @@ RUN groupadd -g ${GROUP_ID} vscode && \
 
 COPY . .
 
-RUN chown -R vscode:vscode /test_playground/backend
 RUN chsh -s /bin/bash vscode
-
-RUN groupadd docker && \
-    usermod -aG docker vscode
 
 USER vscode
 
