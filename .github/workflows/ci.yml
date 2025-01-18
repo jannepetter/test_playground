@@ -39,8 +39,7 @@ jobs:
 
       - name: Run backend tests
         run: |
-          docker exec test_playground-server-1 sh init.sh
-          docker exec test_playground-server-1 python manage.py test
+          docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
 
       - name: Run e2e tests
         run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test"
