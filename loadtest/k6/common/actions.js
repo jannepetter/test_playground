@@ -8,7 +8,7 @@ import {
 export function dataConsumerActions(data) {
   const user = data[__VU % data.length];
   const headers = user.headers;
-  const blogs = getBlogList(headers);
+  const blogs = getBlogList(headers).results;
   sleepRandom();
   let random = Math.floor(Math.random() * blogs.length);
   getBlogDetail(blogs[random].id, headers);

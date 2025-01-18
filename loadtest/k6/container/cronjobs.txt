@@ -1,1 +1,1 @@
-*/10 * * * * /scripts/run_script.sh quick.js 2 reset
+*/10 * * * * /scripts/run_script.sh smoke.js 2 reset

@@ -1,1 +1,1 @@
-*/10 * * * * /scripts/run_script.sh quick.js 1 cloud_reset
+*/10 * * * * /scripts/run_script.sh smoke.js 1 cloud_reset
