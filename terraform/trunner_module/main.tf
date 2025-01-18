@@ -72,7 +72,7 @@ resource "aws_ecs_task_definition" "testrunner_task" {
 
   container_definitions = jsonencode([{
     name  = "${var.environment}-testrunner"
-    image = "${var.AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${var.AWS_REPO}:testrunner"
+    image = "${var.AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${var.AWS_REPO}/testrunner:latest"
 
     environment = [
       {

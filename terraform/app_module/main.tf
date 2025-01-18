@@ -8,7 +8,7 @@ resource "aws_ecs_task_definition" "frontend_task" {
 
   container_definitions = jsonencode([{
     name  = "${var.environment}-frontend"
-    image = "${var.AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${var.AWS_REPO}:frontend"
+    image = "${var.AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${var.AWS_REPO}/frontend:latest"
 
     portMappings = [
       {
@@ -108,7 +108,7 @@ resource "aws_ecs_task_definition" "backend_task" {
 
   container_definitions = jsonencode([{
     name  = "${var.environment}-backend"
-    image = "${var.AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${var.AWS_REPO}:server"
+    image = "${var.AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${var.AWS_REPO}/server:latest"
     portMappings = [{
       containerPort = 8000
       hostPort      = 8000
