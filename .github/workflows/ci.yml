@@ -4,20 +4,6 @@ on:
   push:
     branches: ["pipes"]
 
-env:
-  CI_DB_HOST: ${{ secrets.CI_DB_HOST }}
-  CI_DJANGO_SECRET_KEY: ${{ secrets.CI_DJANGO_SECRET_KEY}}
-  CI_JWT_SIGNING_KEY: ${{ secrets.CI_JWT_SIGNING_KEY}}
-  CI_JWT_VERIFYING_KEY: ${{ secrets.CI_JWT_VERIFYING_KEY}}
-  CI_POSTGRES_DB: ${{ secrets.CI_POSTGRES_DB}}
-  CI_POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD}}
-  CI_POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER}}
-  APP_ENV: CI
-  AWS_ACCOUNT_ID: 1
-  AWS_REPO: joo
-  AWS_REGION: jep
-  TEST_URL: http://server:8000
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,6 +16,19 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and run images
+        env:
+          CI_DB_HOST: ${{ secrets.CI_DB_HOST }}
+          CI_DJANGO_SECRET_KEY: ${{ secrets.CI_DJANGO_SECRET_KEY}}
+          CI_JWT_SIGNING_KEY: ${{ secrets.CI_JWT_SIGNING_KEY}}
+          CI_JWT_VERIFYING_KEY: ${{ secrets.CI_JWT_VERIFYING_KEY}}
+          CI_POSTGRES_DB: ${{ secrets.CI_POSTGRES_DB}}
+          CI_POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD}}
+          CI_POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER}}
+          APP_ENV: CI
+          AWS_ACCOUNT_ID: 1
+          AWS_REPO: joo
+          AWS_REGION: jep
+          TEST_URL: http://server:8000
         run: |
           docker compose -f docker-compose.ci.yml build
           docker compose -f docker-compose.ci.yml up -d
