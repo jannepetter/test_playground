@@ -35,9 +35,7 @@ jobs:
         with:
           source: .
           files: docker-compose.ci.yml
-          set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
+          load: true
 
       - name: Run images
         run: docker compose -f docker-compose.ci.yml up -d
