@@ -19,11 +19,6 @@ env:
   AWS_REGION: jep
   TEST_URL: http://server:8000
 
-permissions:
-  contents: read
-  packages: write
-  id-token: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,23 +39,24 @@ jobs:
             docker-bake.hcl
           load: true
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Tag and push images to GHCR
+      - name: Save Docker images as tarball
         run: |
-          docker tag db ghcr.io/${{ github.repository }}/db:latest
-          docker push ghcr.io/${{ github.repository }}/db:latest
-          docker tag frontend ghcr.io/${{ github.repository }}/frontend:latest
-          docker push ghcr.io/${{ github.repository }}/frontend:latest
-          docker tag server ghcr.io/${{ github.repository }}/server:latest
-          docker push ghcr.io/${{ github.repository }}/server:latest
-          docker tag testrunner ghcr.io/${{ github.repository }}/testrunner:latest
-          docker push ghcr.io/${{ github.repository }}/testrunner:latest
+          docker save db | zstd -1 -o db.tar.zst
+          docker save frontend | zstd -1 -o frontend.tar.zst
+          docker save server | zstd -1 -o server.tar.zst
+          docker save testrunner | zstd -1 -o testrunner.tar.zst
+
+      - name: Upload Docker artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-images
+          path: |
+            db.tar.zst
+            frontend.tar.zst
+            server.tar.zst
+            testrunner.tar.zst
+          retention-days: 2
+          overwrite: true
 
   test:
     needs: build
@@ -69,19 +65,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+      - name: Download Docker artifacts
+        uses: actions/download-artifact@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          name: docker-images
 
-      - name: Pull images and load them into Docker Compose
+      - name: Load Docker images
         run: |
-          docker pull ghcr.io/${{ github.repository }}/db:latest
-          docker pull ghcr.io/${{ github.repository }}/frontend:latest
-          docker pull ghcr.io/${{ github.repository }}/server:latest
-          docker pull ghcr.io/${{ github.repository }}/testrunner:latest
+          zstd -d < db.tar.zst | docker load
+          zstd -d < frontend.tar.zst | docker load
+          zstd -d < server.tar.zst | docker load
+          zstd -d < testrunner.tar.zst | docker load
 
       - name: Run images
         run: docker compose -f docker-compose.ci.yml up -d
