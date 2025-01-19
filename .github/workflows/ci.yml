@@ -34,7 +34,9 @@ jobs:
         uses: docker/bake-action@v6
         with:
           source: .
-          files: docker-compose.ci.yml
+          files: |
+            docker-compose.ci.yml
+            docker-bake.hcl
           load: true
 
       - name: Run images
