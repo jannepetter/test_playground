@@ -19,6 +19,11 @@ env:
   AWS_REGION: jep
   TEST_URL: http://server:8000
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
