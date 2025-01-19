@@ -39,6 +39,44 @@ jobs:
             docker-bake.hcl
           load: true
 
+      - name: Save Docker images as tarball
+        run: |
+          docker save db | gzip > db.tar.gz
+          docker save frontend | gzip > frontend.tar.gz
+          docker save server | gzip > server.tar.gz
+          docker save testrunner | gzip > testrunner.tar.gz
+
+      - name: Upload Docker artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-images
+          path: |
+            db.tar.gz
+            frontend.tar.gz
+            server.tar.gz
+            testrunner.tar.gz
+          retention-days: 2
+          overwrite: true
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Docker artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+
+      - name: Load Docker images
+        run: |
+          gunzip < db.tar.gz | docker load
+          gunzip < frontend.tar.gz | docker load
+          gunzip < server.tar.gz | docker load
+          gunzip < testrunner.tar.gz | docker load
+
+      - name: Run Docker containers
+        run: docker compose -f docker-compose.yml up -d
+
       - name: Run images
         run: docker compose -f docker-compose.ci.yml up -d
 
