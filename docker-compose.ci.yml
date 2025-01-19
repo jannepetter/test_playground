@@ -3,7 +3,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.db
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}/db:latest
+    image: db
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -13,7 +13,7 @@ services:
     build:
       context: ./backend
       dockerfile: ${BACKEND_DOCKERFILE:-Dockerfile}
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}/server:latest
+    image: server
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
@@ -36,7 +36,7 @@ services:
       dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile.ci}
       args:
         APP_ENV: ${APP_ENV}
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}/frontend:latest
+    image: frontend
     command: npm run start
     ports:
       - 3000:3000
@@ -51,7 +51,7 @@ services:
       dockerfile: ./loadtest/k6/container/${TESTRUNNER_DOCKERFILE:-Dockerfile.testrunner}
       args:
         APP_ENV: ${APP_ENV}
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO}/testrunner:latest
+    image: testrunner
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
