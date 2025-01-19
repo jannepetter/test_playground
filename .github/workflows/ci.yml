@@ -30,10 +30,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and run images
-        run: |
-          docker compose -f docker-compose.ci.yml build
-          docker compose -f docker-compose.ci.yml up -d
+      - name: Build images
+        uses: docker/bake-action@v6
+        with:
+          source: .
+          files: docker-compose.ci.yml
+
+      - name: Run images
+        run: docker compose -f docker-compose.ci.yml up -d
 
       - name: Run frontend tests
         run: docker exec test_playground-frontend-1 npm run test
