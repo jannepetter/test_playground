@@ -5,7 +5,6 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY . .
 
-# RUN chown -R node:node /test_playground/frontend
 RUN chsh -s /bin/bash node
 
 ARG APP_ENV

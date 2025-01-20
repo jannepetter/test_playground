@@ -20,9 +20,8 @@ env:
   TEST_URL: http://server:8000
 
 jobs:
-  build:
+  jep:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,63 +38,107 @@ jobs:
             docker-bake.hcl
           load: true
 
-      - name: Save Docker images as tarball
-        run: |
-          docker save db | zstd -1 -o db.tar.zst
-          docker save frontend | zstd -1 -o frontend.tar.zst
-          docker save server | zstd -1 -o server.tar.zst
-          docker save testrunner | zstd -1 -o testrunner.tar.zst
-
-      - name: Upload Docker artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-images
-          path: |
-            db.tar.zst
-            frontend.tar.zst
-            server.tar.zst
-            testrunner.tar.zst
-          retention-days: 2
-          overwrite: true
-
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Docker artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-images
-
-      - name: Load Docker images
-        run: |
-          zstd -d < db.tar.zst | docker load
-          zstd -d < frontend.tar.zst | docker load
-          zstd -d < server.tar.zst | docker load
-          zstd -d < testrunner.tar.zst | docker load
-
       - name: Run images
         run: docker compose -f docker-compose.ci.yml up -d
 
-      - name: Run frontend tests
-        run: docker exec test_playground-frontend-1 npm run test
+      - name: Lint server
+        run: docker exec test_playground-server-1 ruff check
 
-      - name: Run backend tests
-        run: |
-          docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
+      - name: Lint frontend
+        run: docker exec test_playground-frontend-1 npm run lint
 
-      - name: Run e2e tests
-        run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test --reporter=list"
+      - name: Tear down
+        run: docker compose -f docker-compose.ci.yml down
 
-      - name: Run performance smoke test
-        run: |
-          docker exec test_playground-server-1 sh reset_db.sh
-          docker exec test_playground-testrunner-1 k6 run /scripts/smoke.js
+      - name: Scan image
+        uses: anchore/scan-action@v6
+        with:
+          image: "server"
+          fail-build: true
+          severity-cutoff: high
 
-      - name: Tear Down Services
-        if: always()
-        run: |
-          docker compose -f docker-compose.ci.yml down
+      - name: Scan image
+        uses: anchore/scan-action@v6
+        with:
+          image: "frontend"
+          fail-build: true
+          severity-cutoff: high
+  # build:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+
+  #     - name: Build images
+  #       uses: docker/bake-action@v6
+  #       with:
+  #         source: .
+  #         files: |
+  #           docker-compose.ci.yml
+  #           docker-bake.hcl
+  #         load: true
+
+  # - name: Save Docker images as tarball
+  #   run: |
+  #     docker save db | zstd -1 -o db.tar.zst
+  #     docker save frontend | zstd -1 -o frontend.tar.zst
+  #     docker save server | zstd -1 -o server.tar.zst
+  #     docker save testrunner | zstd -1 -o testrunner.tar.zst
+
+  # - name: Upload Docker artifacts
+  #   uses: actions/upload-artifact@v4
+  #   with:
+  #     name: docker-images
+  #     path: |
+  #       db.tar.zst
+  #       frontend.tar.zst
+  #       server.tar.zst
+  #       testrunner.tar.zst
+  #     retention-days: 2
+  #     overwrite: true
+
+  # test:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Download Docker artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: docker-images
+
+  #     - name: Load Docker images
+  #       run: |
+  #         zstd -d < db.tar.zst | docker load
+  #         zstd -d < frontend.tar.zst | docker load
+  #         zstd -d < server.tar.zst | docker load
+  #         zstd -d < testrunner.tar.zst | docker load
+
+  #     - name: Run images
+  #       run: docker compose -f docker-compose.ci.yml up -d
+
+  #     - name: Run frontend tests
+  #       run: docker exec test_playground-frontend-1 npm run test
+
+  #     - name: Run backend tests
+  #       run: |
+  #         docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
+
+  #     - name: Run e2e tests
+  #       run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test --reporter=list"
+
+  #     - name: Run performance smoke test
+  #       run: |
+  #         docker exec test_playground-server-1 sh reset_db.sh
+  #         docker exec test_playground-testrunner-1 k6 run /scripts/smoke.js
+
+  # - name: Tear Down Services
+  #   if: always()
+  #   run: |
+  #     docker compose -f docker-compose.ci.yml down

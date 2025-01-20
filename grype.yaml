@@ -5,3 +5,7 @@ ignore:
   - package:
       name: libsqlite3-0
       version: 3.40.1-2
+  - vulnerability: CVE-2024-12254
+    reason: Fixed in Python 3.14.0a2, but psycopg[binary]==3.2.4 current latest at 20.01.2025 does not support it yet.
+  - vulnerability: GHSA-3xgq-45jj-v275
+    reason: Eslint related. Not issue with production
