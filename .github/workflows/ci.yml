@@ -57,6 +57,7 @@ jobs:
           fail-build: true
           severity-cutoff: high
           output-format: table
+          only-fixed: true
 
       - name: Scan image
         uses: anchore/scan-action@v6
@@ -65,6 +66,7 @@ jobs:
           fail-build: true
           severity-cutoff: high
           output-format: table
+          only-fixed: true
   # build:
   #   runs-on: ubuntu-latest
 
