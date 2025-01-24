@@ -10,12 +10,7 @@
     "test": "jest",
     "test:unit": "jest -- tests/unit",
     "test:integration": "jest -- tests/integration",
-    "test:coverage": "jest --coverage",
-    "test:e2e": "npx playwright test",
-    "pw-step2": "docker-compose restart playwright",
-    "pw-step1": "docker-compose exec -T playwright npm run build",
-    "pw-refresh": "npm run pw-step1 && npm run pw-step2",
-    "k6-refresh": "docker-compose build k6 && docker-compose up k6"
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "axios": "^1.7.4",
