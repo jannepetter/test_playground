@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["pipes"]
+    branches: ["nobranch"]
 
 env:
   DJANGO_SETTINGS_MODULE: backend.settings

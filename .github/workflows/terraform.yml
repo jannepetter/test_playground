@@ -3,8 +3,20 @@ name: Terraform workflow
 on:
   push:
     branches: ["pipes"]
-    paths: ["terraform/**"]
+    # paths: ["terraform/**"]
 
+env:
+  TF_VAR_DB_HOST: ${{ secrets.CI_AWS_DB_HOST }}
+  TF_VAR_DJANGO_SECRET_KEY: ${{ secrets.CI_DJANGO_SECRET_KEY}}
+  TF_VAR_JWT_SIGNING_KEY: ${{ secrets.CI_JWT_SIGNING_KEY}}
+  TF_VAR_JWT_VERIFYING_KEY: ${{ secrets.CI_JWT_VERIFYING_KEY}}
+  TF_VAR_POSTGRES_DB: ${{ secrets.CI_POSTGRES_DB}}
+  TF_VAR_POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD}}
+  TF_VAR_POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER}}
+  TF_VAR_AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
+  TF_VAR_AWS_REPO: ${{ secrets.AWS_REPO}}
+  TF_VAR_environment: "ci"
+  TF_VAR_DJANGO_ENV: "development"
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -12,13 +24,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.7"
+
       - name: Print current directory
         run: |
           echo "Current working directory: $PWD"
           ls -al $PWD
 
-      - name: Run terrascan
-        run: cd terraform/tests && terraform test
+      - name: Run tests
+        run: |
+          cd terraform/tests
+          terraform validate
+          terraform test
+
+      - name: Plan
+        run: |
+          cd ../ci
+          terraform init
+          terraform plan
 
       - name: Run terrascan
-        run: make terrascan_ci
+        run: |
+          cd ../..
+          make terrascan_ci
