@@ -12,5 +12,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Print current directory
+        run: |
+          echo "Current working directory: $PWD"
+          ls -al $PWD
+
+      - name: Run terrascan
+        run: cd terraform/tests && terraform test
+
       - name: Run terrascan
         run: make terrascan_ci
