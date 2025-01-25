@@ -49,7 +49,7 @@ jobs:
 
       - name: Plan
         run: |
-          cd ci
+          cd terraform/ci
           terraform init
           terraform plan
 
