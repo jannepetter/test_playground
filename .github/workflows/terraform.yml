@@ -49,11 +49,10 @@ jobs:
 
       - name: Plan
         run: |
-          cd ../ci
+          cd ci
           terraform init
           terraform plan
 
       - name: Run terrascan
         run: |
-          cd ../..
           make terrascan_ci
