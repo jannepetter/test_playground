@@ -65,7 +65,7 @@ jobs:
         run: |
           docker tag server $REGISTRY/$REPOSITORY/server:latest
           docker push $REGISTRY/$REPOSITORY/server:latest
-          docker tag frontend $REGISTRY/$REPOSITORY/frontend:latest
+          docker build --build-arg APP_ENV= -f ./frontend/Dockerfile.prod -t $REGISTRY/$REPOSITORY/frontend:latest ./frontend
           docker push $REGISTRY/$REPOSITORY/frontend:latest
           docker tag testrunner $REGISTRY/$REPOSITORY/testrunner:latest
           docker push $REGISTRY/$REPOSITORY/testrunner:latest
