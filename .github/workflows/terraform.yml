@@ -2,8 +2,8 @@ name: Terraform workflow
 
 on:
   push:
-    branches: ["pipes"]
-    # paths: ["terraform/**"]
+    branches: ["somebranch"]
+    paths: ["terraform/**"]
 
 env:
   TF_VAR_DB_HOST: ${{ secrets.CI_AWS_DB_HOST }}
@@ -35,11 +35,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Print current directory
-        run: |
-          echo "Current working directory: $PWD"
-          ls -al $PWD
-
       - name: Run tests
         run: |
           cd terraform/tests
@@ -47,12 +42,12 @@ jobs:
           terraform validate
           terraform test
 
+      - name: Run terrascan
+        run: |
+          make terrascan_ci
+
       - name: Plan
         run: |
           cd terraform/ci
           terraform init
           terraform plan
-
-      - name: Run terrascan
-        run: |
-          make terrascan_ci

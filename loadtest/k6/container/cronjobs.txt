@@ -1,1 +1,2 @@
-*/10 * * * * /scripts/run_script.sh smoke.js 2 reset
+*/15 * * * * /scripts/run_script.sh smoke.js 2 reset
+*/10 * * * * /scripts/run_script.sh - e2e

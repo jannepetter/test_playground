@@ -19,6 +19,7 @@ resource "aws_ecs_task_definition" "frontend_task" {
         appProtocol   = "http"
       }
     ],
+    command = ["npm", "run", "start"],
     essential = true,
   }])
 }

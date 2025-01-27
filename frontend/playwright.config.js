@@ -16,7 +16,7 @@ const getBaseUrl = () => {
       return "http://frontend:3000";
 
     case "ENV":
-      return "";
+      return process.env.TEST_URL;
 
     default:
       return "http://localhost:3000";

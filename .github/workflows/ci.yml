@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["nobranch"]
+    branches: ["pipes"]
 
 env:
   DJANGO_SETTINGS_MODULE: backend.settings
@@ -47,6 +47,9 @@ jobs:
       - name: Lint frontend
         run: docker exec test_playground-frontend-1 npm run lint
 
+      - name: Stop containers
+        run: docker compose -f docker-compose.ci.yml down
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -65,10 +68,12 @@ jobs:
         run: |
           docker tag server $REGISTRY/$REPOSITORY/server:latest
           docker push $REGISTRY/$REPOSITORY/server:latest
-          docker build --build-arg APP_ENV= -f ./frontend/Dockerfile.prod -t $REGISTRY/$REPOSITORY/frontend:latest ./frontend
+          docker build --build-arg APP_ENV=ENV -f ./frontend/Dockerfile.prod -t $REGISTRY/$REPOSITORY/frontend:latest ./frontend
           docker push $REGISTRY/$REPOSITORY/frontend:latest
           docker tag testrunner $REGISTRY/$REPOSITORY/testrunner:latest
           docker push $REGISTRY/$REPOSITORY/testrunner:latest
+
+      # Step update ecs images. Task defs etc. If push.
 
       - name: Tear Down Services
         if: always()
