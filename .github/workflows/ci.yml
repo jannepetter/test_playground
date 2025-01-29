@@ -73,7 +73,57 @@ jobs:
           docker tag testrunner $REGISTRY/$REPOSITORY/testrunner:latest
           docker push $REGISTRY/$REPOSITORY/testrunner:latest
 
+      - name: Download task-defs
+        run: |
+          aws ecs describe-task-definition --task-definition testrunner-task --query taskDefinition > testrunner-task-definition.json
+          aws ecs describe-task-definition --task-definition frontend-task --query taskDefinition > frontend-task-definition.json
+          aws ecs describe-task-definition --task-definition backend-task --query taskDefinition > backend-task-definition.json
+
       # Step update ecs images. Task defs etc. If push.
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def-backend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: backend-task-definition.json
+          container-name: ci-backend
+          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/backend:latest
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
+          service: ci-backend-service
+          cluster: tpg-ci-cluster
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def-front
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: frontend-task-definition.json
+          container-name: ci-frontend
+          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/frontend:latest
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-front.outputs.task-definition }}
+          service: ci-frontend-service
+          cluster: tpg-ci-cluster
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def-testrunner
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: testrunner-task-definition.json
+          container-name: ci-testrunner
+          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/testrunner:latest
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-testrunner.outputs.task-definition }}
+          service: ci-testrunner-service
+          cluster: tpg-ci-cluster
 
       - name: Tear Down Services
         if: always()

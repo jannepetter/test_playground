@@ -36,7 +36,7 @@ elif [ "$CASE" = "2" ]  && [ "$ADDRESS" ]; then
 elif [ "$CASE" = "2" ]; then
     /usr/bin/k6 run --out influxdb="$INFLUXDB_URL" "/scripts/$K6_SCRIPT" > $LOG_FILE
 elif [ "$CASE" = "e2e" ]; then
-    cd /app && npx playwright test > $LOG_FILE
+    cd /app && npx playwright test --reporter=list > $LOG_FILE
 else
     echo "Invalid action. Usage: $0 script case-{1|2} reset-{reset|cloud_reset|-} address"
     # E.g run_script.sh script_name case cloud_reset

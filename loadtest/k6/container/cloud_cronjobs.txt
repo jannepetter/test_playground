@@ -1,2 +1,2 @@
-*/10 * * * * /scripts/run_script.sh smoke.js 1 cloud_reset
-*/10 * * * * /scripts/run_script.sh - e2e
+15,45 * * * * /scripts/run_script.sh smoke.js 1 cloud_reset
+0,30 * * * * /scripts/run_script.sh - e2e

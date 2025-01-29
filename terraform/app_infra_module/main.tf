@@ -87,7 +87,7 @@ resource "aws_lb" "my_load_balancer" {
   subnets = [aws_subnet.public_subnet.id, aws_subnet.public_subnet2.id]
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
     ignore_changes = [
       security_groups
     ]
