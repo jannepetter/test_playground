@@ -9,7 +9,7 @@ async function globalSetup(config, testInfo) {
   const page = await browser.newPage();
   await page.goto(baseUrl + "/login");
   const loginTitle = page.locator("h1");
-  await expect(loginTitle).toHaveText("Login");
+  await expect(loginTitle).toHaveText("Login mod");
   await page.getByPlaceholder("username").fill("testuser");
   await page.getByPlaceholder("password").fill("testuser");
   await expect(async () => {
