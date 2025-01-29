@@ -18,6 +18,7 @@ env:
   AWS_REPO: ${{ secrets.AWS_REPO}}
   AWS_REGION: ${{ secrets.AWS_REGION}}
   TEST_URL: http://server:8000
+  REGISTRY: ${{ secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{ secrets.AWS_REGION}}.amazonaws.com
 
 jobs:
   build:
@@ -62,16 +63,13 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push docker image to Amazon ECR
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ secrets.AWS_REPO }}
         run: |
-          docker tag server $REGISTRY/$REPOSITORY/server:${{ github.sha }}
-          docker push $REGISTRY/$REPOSITORY/server:${{ github.sha }}
-          docker build --build-arg APP_ENV=ENV -f ./frontend/Dockerfile.prod -t $REGISTRY/$REPOSITORY/frontend:${{ github.sha }} ./frontend
-          docker push $REGISTRY/$REPOSITORY/frontend:${{ github.sha }}
-          docker tag testrunner $REGISTRY/$REPOSITORY/testrunner:${{ github.sha }}
-          docker push $REGISTRY/$REPOSITORY/testrunner:${{ github.sha }}
+          docker tag server ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:${{ github.sha }}
+          docker build --build-arg APP_ENV=ENV -f ./frontend/Dockerfile.prod -t ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }} ./frontend
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }}
+          docker tag testrunner ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:${{ github.sha }}
 
       - name: Download task-defs
         run: |
@@ -86,7 +84,7 @@ jobs:
         with:
           task-definition: backend-task-definition.json
           container-name: ci-backend
-          image: $REGISTRY/$REPOSITORY/backend:${{ github.sha }}
+          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/backend:${{ github.sha }}
 
       - name: Deploy new backend Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -101,7 +99,7 @@ jobs:
         with:
           task-definition: frontend-task-definition.json
           container-name: ci-frontend
-          image: $REGISTRY/$REPOSITORY/frontend:${{ github.sha }}
+          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }}
 
       - name: Deploy new frontend Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -116,7 +114,7 @@ jobs:
         with:
           task-definition: testrunner-task-definition.json
           container-name: ci-testrunner
-          image: $REGISTRY/$REPOSITORY/testrunner:${{ github.sha }}
+          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:${{ github.sha }}
 
       - name: Deploy new testrunner Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
