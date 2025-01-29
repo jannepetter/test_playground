@@ -86,7 +86,7 @@ jobs:
         with:
           task-definition: backend-task-definition.json
           container-name: ci-backend
-          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/backend:${{ github.sha }}
+          image: $REGISTRY/$REPOSITORY/backend:${{ github.sha }}
 
       - name: Deploy new backend Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -101,7 +101,7 @@ jobs:
         with:
           task-definition: frontend-task-definition.json
           container-name: ci-frontend
-          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }}
+          image: $REGISTRY/$REPOSITORY/frontend:${{ github.sha }}
 
       - name: Deploy new frontend Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -116,7 +116,7 @@ jobs:
         with:
           task-definition: testrunner-task-definition.json
           container-name: ci-testrunner
-          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/testrunner:${{ github.sha }}
+          image: $REGISTRY/$REPOSITORY/testrunner:${{ github.sha }}
 
       - name: Deploy new testrunner Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
