@@ -204,7 +204,7 @@ jobs:
         with:
           task-definition: backend-task-definition.json
           container-name: ci-backend
-          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/backend:${{ github.sha }}
+          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:${{ github.sha }}
 
       - name: Deploy new backend Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
