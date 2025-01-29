@@ -66,12 +66,12 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ secrets.AWS_REPO }}
         run: |
-          docker tag server $REGISTRY/$REPOSITORY/server:latest
-          docker push $REGISTRY/$REPOSITORY/server:latest
-          docker build --build-arg APP_ENV=ENV -f ./frontend/Dockerfile.prod -t $REGISTRY/$REPOSITORY/frontend:latest ./frontend
-          docker push $REGISTRY/$REPOSITORY/frontend:latest
-          docker tag testrunner $REGISTRY/$REPOSITORY/testrunner:latest
-          docker push $REGISTRY/$REPOSITORY/testrunner:latest
+          docker tag server $REGISTRY/$REPOSITORY/server:${{ github.sha }}
+          docker push $REGISTRY/$REPOSITORY/server:${{ github.sha }}
+          docker build --build-arg APP_ENV=ENV -f ./frontend/Dockerfile.prod -t $REGISTRY/$REPOSITORY/frontend:${{ github.sha }} ./frontend
+          docker push $REGISTRY/$REPOSITORY/frontend:${{ github.sha }}
+          docker tag testrunner $REGISTRY/$REPOSITORY/testrunner:${{ github.sha }}
+          docker push $REGISTRY/$REPOSITORY/testrunner:${{ github.sha }}
 
       - name: Download task-defs
         run: |
@@ -80,45 +80,45 @@ jobs:
           aws ecs describe-task-definition --task-definition backend-task --query taskDefinition > backend-task-definition.json
 
       # Step update ecs images. Task defs etc. If push.
-      - name: Fill in the new image ID in the Amazon ECS task definition
+      - name: Update backend ECS task definition
         id: task-def-backend
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: backend-task-definition.json
           container-name: ci-backend
-          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/backend:latest
+          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/backend:${{ github.sha }}
 
-      - name: Deploy Amazon ECS task definition
+      - name: Deploy new backend Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
           service: ci-backend-service
           cluster: tpg-ci-cluster
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
+      - name: Update frontend ECS task definition
         id: task-def-front
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: frontend-task-definition.json
           container-name: ci-frontend
-          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/frontend:latest
+          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }}
 
-      - name: Deploy Amazon ECS task definition
+      - name: Deploy new frontend Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def-front.outputs.task-definition }}
           service: ci-frontend-service
           cluster: tpg-ci-cluster
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
+      - name: Update testrunner ECS task definition
         id: task-def-testrunner
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: testrunner-task-definition.json
           container-name: ci-testrunner
-          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/testrunner:latest
+          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/testrunner:${{ github.sha }}
 
-      - name: Deploy Amazon ECS task definition
+      - name: Deploy new testrunner Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def-testrunner.outputs.task-definition }}
