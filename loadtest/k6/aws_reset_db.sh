@@ -5,7 +5,7 @@ REGION="eu-central-1"
 source /etc/environment
 
 if [ "$1" = "testrunner" ]; then
-    TASK_ID=$(/usr/local/bin/aws ecs list-tasks --cluster "$CLUSTER_NAME" --service-name "$SERVICE_NAME" --query "taskArns[0]")
+    TASK_ID=$(/usr/local/bin/aws ecs list-tasks --cluster "$CLUSTER_NAME" --service-name "$SERVICE_NAME" --desired-status RUNNING --query "taskArns[0]")
     TASK_ID=${TASK_ID##*/}      # Get Task ID from ARN
     TASK_ID=${TASK_ID%\"} 
 
