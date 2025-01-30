@@ -9,7 +9,7 @@ if [ "$1" = "testrunner" ]; then
     TASK_ID=${TASK_ID##*/}      # Get Task ID from ARN
     TASK_ID=${TASK_ID%\"} 
 
-    /usr/local/bin/aws ecs execute-command \
+    unbuffer /usr/local/bin/aws ecs execute-command \
         --cluster "$CLUSTER_NAME" \
         --task "$TASK_ID" \
         --container "ci-backend" \

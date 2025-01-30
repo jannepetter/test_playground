@@ -11,6 +11,7 @@ RUN apt-get update && \
     nano \
     less \
     tini \
+    expect \
     docker.io \
     && apt-get clean
 

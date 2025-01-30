@@ -11,6 +11,7 @@ RUN apt-get update && \
     nano \
     less \
     tini \
+    expect \
     && apt-get clean
 
 WORKDIR /app
