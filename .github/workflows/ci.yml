@@ -186,11 +186,16 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR
         run: |
           docker tag server ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:${{ github.sha }}
-          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:${{ github.sha }}
+          docker tag server ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:latest
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server --all-tags
+
           docker build --build-arg APP_ENV=ENV -f ./frontend/Dockerfile.prod -t ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }} ./frontend
-          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }}
+          docker tag ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:latest
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend --all-tags
+
           docker tag testrunner ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:${{ github.sha }}
-          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:${{ github.sha }}
+          docker tag testrunner ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:latest
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner --all-tags
 
       - name: Download task-defs
         run: |
