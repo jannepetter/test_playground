@@ -19,7 +19,6 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION}}
   TEST_URL: http://server:8000
   REGISTRY: ${{ secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{ secrets.AWS_REGION}}.amazonaws.com
-  TESTRUNNER_DOCKERFILE: Dockerfile.testrunner.cloud
 
 jobs:
   build:
