@@ -7,11 +7,12 @@ async function globalSetup(config, testInfo) {
   await resetDb();
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
-  await page.goto(baseUrl + "/login");
+
   await expect(async () => {
+    await page.goto(baseUrl + "/login");
     const loginTitle = page.locator("h1");
     await expect(loginTitle).toHaveText("Login");
-  }).toPass({ timeout: 15000 });
+  }).toPass({ timeout: 30000 });
 
   await page.getByPlaceholder("username").fill("testuser");
   await page.getByPlaceholder("password").fill("testuser");
