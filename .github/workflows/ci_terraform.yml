@@ -2,7 +2,7 @@ name: Terraform workflow for CI branch
 
 on:
   push:
-    branches: ["pipes"]
+    branches: ["ci"]
     paths: ["terraform/**"]
   workflow_dispatch:
     inputs:
