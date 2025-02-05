@@ -1,0 +1,69 @@
+name: Terraform workflow for CI branch
+
+on:
+  push:
+    branches: ["pipes"]
+    paths: ["terraform/**"]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Choose between plan and apply'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+
+env:
+  TF_VAR_DB_HOST: ${{ secrets.CI_AWS_DB_HOST }}
+  TF_VAR_DJANGO_SECRET_KEY: ${{ secrets.CI_DJANGO_SECRET_KEY}}
+  TF_VAR_JWT_SIGNING_KEY: ${{ secrets.CI_JWT_SIGNING_KEY}}
+  TF_VAR_JWT_VERIFYING_KEY: ${{ secrets.CI_JWT_VERIFYING_KEY}}
+  TF_VAR_POSTGRES_DB: ${{ secrets.CI_POSTGRES_DB}}
+  TF_VAR_POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD}}
+  TF_VAR_POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER}}
+  TF_VAR_AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
+  TF_VAR_AWS_REPO: ${{ secrets.AWS_REPO}}
+  TF_VAR_environment: "ci"
+  TF_VAR_DJANGO_ENV: "development"
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.7"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Run tests
+        run: |
+          cd terraform/tests
+          terraform init
+          terraform validate
+          terraform test
+
+      - name: Run terrascan
+        run: |
+          make terrascan_ci
+
+      - name: Plan
+        run: |
+          cd terraform/ci
+          terraform init
+          terraform plan
+
+      - name: Apply
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/ci' && github.event.inputs.action == 'apply'
+        run: |
+          cd terraform/ci
+          terraform apply -auto-approve

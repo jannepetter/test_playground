@@ -1,7 +1,7 @@
 import { testSetup } from "./common/functions.js";
 import { dataConsumerActions, dataCreatorActions } from "./common/actions.js";
 
-// docker-compose run --rm k6 run /scripts/quick.js
+// docker-compose run --rm k6 run /scripts/smoke.js
 
 export const options = {
   summaryTrendStats: ["p(95)", "p(99)"],
@@ -14,8 +14,8 @@ export const options = {
     basicUser: {
       executor: "shared-iterations",
       exec: "sc1",
-      vus: 50,
-      iterations: 100,
+      vus: 20,
+      iterations: 40,
       maxDuration: "1m",
     },
     contentCreator: {

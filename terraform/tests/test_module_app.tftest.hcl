@@ -67,11 +67,11 @@ run "test_app_module" {
 
   # backend checks
   assert {
-    condition     = aws_ecs_task_definition.backend_task.cpu == "256"
+    condition     = aws_ecs_task_definition.backend_task.cpu == "512"
     error_message = "Backend task returned wrong cpu amount"
   }
   assert {
-    condition     = aws_ecs_task_definition.backend_task.memory == "512"
+    condition     = aws_ecs_task_definition.backend_task.memory == "1024"
     error_message = "Backend task returned wrong memory amount"
   }
   assert {

@@ -6,6 +6,11 @@ terrascan_ci:
 	docker run --rm -v $(shell pwd)/terraform:/project tenable/terrascan scan \
 	 -i terraform -t aws -d /project/ci -l error -c /project/terrascan_config.toml --output json
 
+terrascan_staging:
+	-@echo "Terrascan staging env"
+	docker run --rm -v $(shell pwd)/terraform:/project tenable/terrascan scan \
+	 -i terraform -t aws -d /project/staging -l error -c /project/terrascan_config.toml --output json
+
 terrascan_prod:
 	-@echo "Terrascan production env"
 	docker run --rm -v $(shell pwd)/terraform:/project tenable/terrascan scan \
@@ -18,8 +23,8 @@ tflint:
 scan_with_grype:
 	# usage: scan_with_grype IMAGE=<the image>
 	-@echo "Scanning with grype"
-	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(shell pwd)/grype.yaml:/config/grype.yaml \
-	anchore/grype:latest $(IMAGE) -c /config/grype.yaml --only-fixed -f high
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(shell pwd)/.grype.yaml:/config/.grype.yaml \
+	anchore/grype:latest $(IMAGE) -c /config/.grype.yaml --only-fixed -f high
 
 trivy_scan:
 	# usage: trivy_scan IMAGE=<the image>

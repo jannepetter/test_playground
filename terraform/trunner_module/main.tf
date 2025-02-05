@@ -82,6 +82,14 @@ resource "aws_ecs_task_definition" "testrunner_task" {
       {
         name  = "SET_CRONJOBS"
         value = "cloud"
+      },
+      {
+        name  = "APP_ENV"
+        value = "ENV"
+      },
+      {
+        name  = "NEXT_PUBLIC_APP_ENV"
+        value = "ENV"
       }
     ]
     logConfiguration = {

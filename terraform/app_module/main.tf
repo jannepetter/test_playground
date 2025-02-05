@@ -19,6 +19,7 @@ resource "aws_ecs_task_definition" "frontend_task" {
         appProtocol   = "http"
       }
     ],
+    command = ["npm", "run", "start"],
     essential = true,
   }])
 }
@@ -101,8 +102,8 @@ resource "aws_ecs_task_definition" "backend_task" {
   family                   = "backend-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 512
+  memory                   = 1024
   task_role_arn            = aws_iam_role.ecs_task_role.arn
   execution_role_arn       = "arn:aws:iam::${var.AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole"
 

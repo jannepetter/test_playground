@@ -22,7 +22,7 @@ resource "aws_db_instance" "postgresql_from_snapshot" {
   skip_final_snapshot = true
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
     ignore_changes = [
       storage_encrypted
     ]

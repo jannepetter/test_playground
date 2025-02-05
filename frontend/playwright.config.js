@@ -16,7 +16,7 @@ const getBaseUrl = () => {
       return "http://frontend:3000";
 
     case "ENV":
-      return "";
+      return process.env.TEST_URL;
 
     default:
       return "http://localhost:3000";
@@ -37,7 +37,7 @@ module.exports = defineConfig({
   globalSetup: path.join(__dirname, "/e2e/setup/global-setup.js"),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // reporter: "html",
-  reporter: [["html", { open: "always" }]],
+  // reporter: [["html", { open: "always" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

@@ -1,0 +1,251 @@
+name: CI branch workflow
+
+on:
+  push:
+    branches: ["ci"]
+    paths-ignore: ["terraform/**"]
+
+env:
+  DJANGO_SETTINGS_MODULE: backend.settings
+  DB_HOST: ${{ secrets.CI_DB_HOST }}
+  DJANGO_SECRET_KEY: ${{ secrets.CI_DJANGO_SECRET_KEY}}
+  JWT_SIGNING_KEY: ${{ secrets.CI_JWT_SIGNING_KEY}}
+  JWT_VERIFYING_KEY: ${{ secrets.CI_JWT_VERIFYING_KEY}}
+  POSTGRES_DB: ${{ secrets.CI_POSTGRES_DB}}
+  POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD}}
+  POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER}}
+  APP_ENV: CI
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
+  AWS_REPO: ${{ secrets.AWS_REPO}}
+  AWS_REGION: ${{ secrets.AWS_REGION}}
+  TEST_URL: http://server:8000
+  REGISTRY: ${{ secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{ secrets.AWS_REGION}}.amazonaws.com
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build images
+        uses: docker/bake-action@v6
+        with:
+          source: .
+          files: |
+            docker-compose.ci.yml
+            docker-bake.hcl
+          load: true
+
+      - name: Run images
+        run: docker compose -f docker-compose.ci.yml up -d
+
+      - name: Lint server
+        run: docker exec test_playground-server-1 ruff check
+
+      - name: Lint frontend
+        run: docker exec test_playground-frontend-1 npm run lint
+
+      - name: Stop containers
+        run: docker compose -f docker-compose.ci.yml down
+
+      - name: Save Docker images as tarball
+        run: |
+          docker save db | zstd -1 -o db.tar.zst
+          docker save frontend | zstd -1 -o frontend.tar.zst
+          docker save server | zstd -1 -o server.tar.zst
+          docker save testrunner | zstd -1 -o testrunner.tar.zst
+
+      - name: Upload Docker artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-images
+          path: |
+            db.tar.zst
+            frontend.tar.zst
+            server.tar.zst
+            testrunner.tar.zst
+          retention-days: 5
+          overwrite: true
+
+      - name: Tear Down Services
+        if: always()
+        run: |
+          docker compose -f docker-compose.ci.yml down
+
+  static:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+
+      - name: Load Docker images
+        run: |
+          zstd -d < db.tar.zst | docker load
+          zstd -d < frontend.tar.zst | docker load
+          zstd -d < server.tar.zst | docker load
+          zstd -d < testrunner.tar.zst | docker load
+
+      - name: Scan server image
+        uses: anchore/scan-action@v6
+        with:
+          image: "server"
+          fail-build: true
+          severity-cutoff: high
+          output-format: table
+          only-fixed: true
+
+      - name: Scan frontend image
+        uses: anchore/scan-action@v6
+        with:
+          image: "frontend"
+          fail-build: true
+          severity-cutoff: high
+          output-format: table
+          only-fixed: true
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+
+      - name: Load Docker images
+        run: |
+          zstd -d < db.tar.zst | docker load
+          zstd -d < frontend.tar.zst | docker load
+          zstd -d < server.tar.zst | docker load
+          zstd -d < testrunner.tar.zst | docker load
+
+      - name: Run images
+        run: docker compose -f docker-compose.ci.yml up -d
+
+      - name: Run frontend tests
+        run: docker exec test_playground-frontend-1 npm run test
+
+      - name: Run backend tests
+        run: |
+          docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
+
+      - name: Run e2e tests
+        run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test --reporter=list"
+
+      - name: Run performance smoke test
+        run: |
+          docker exec test_playground-server-1 sh reset_db.sh
+          docker exec test_playground-testrunner-1 k6 run /scripts/smoke.js
+
+      - name: Tear Down Services
+        if: always()
+        run: |
+          docker compose -f docker-compose.ci.yml down
+
+  deploy:
+    if: github.event_name == 'push'
+    needs: [test, static]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+
+      - name: Load Docker images
+        run: |
+          zstd -d < db.tar.zst | docker load
+          zstd -d < frontend.tar.zst | docker load
+          zstd -d < server.tar.zst | docker load
+          zstd -d < testrunner.tar.zst | docker load
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        run: |
+          docker tag server ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:${{ github.sha }}
+          docker tag server ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:latest
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server --all-tags
+
+          docker build --build-arg APP_ENV=ENV -f ./frontend/Dockerfile.prod -t ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }} ./frontend
+          docker tag ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:latest
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend --all-tags
+
+          docker tag testrunner ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:${{ github.sha }}
+          docker tag testrunner ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:latest
+          docker push ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner --all-tags
+
+      - name: Download task-defs
+        run: |
+          aws ecs describe-task-definition --task-definition testrunner-task --query taskDefinition > testrunner-task-definition.json
+          aws ecs describe-task-definition --task-definition frontend-task --query taskDefinition > frontend-task-definition.json
+          aws ecs describe-task-definition --task-definition backend-task --query taskDefinition > backend-task-definition.json
+
+      - name: Update backend ECS task definition
+        id: task-def-backend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: backend-task-definition.json
+          container-name: ci-backend
+          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/server:${{ github.sha }}
+
+      - name: Deploy new backend Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
+          service: ci-backend-service
+          cluster: tpg-ci-cluster
+
+      - name: Update frontend ECS task definition
+        id: task-def-front
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: frontend-task-definition.json
+          container-name: ci-frontend
+          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/frontend:${{ github.sha }}
+
+      - name: Deploy new frontend Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-front.outputs.task-definition }}
+          service: ci-frontend-service
+          cluster: tpg-ci-cluster
+
+      - name: Update testrunner ECS task definition
+        id: task-def-testrunner
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: testrunner-task-definition.json
+          container-name: ci-testrunner
+          image: ${{ env.REGISTRY }}/${{ env.AWS_REPO }}/testrunner:${{ github.sha }}
+
+      - name: Deploy new testrunner Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-testrunner.outputs.task-definition }}
+          service: ci-testrunner-service
+          cluster: tpg-ci-cluster
