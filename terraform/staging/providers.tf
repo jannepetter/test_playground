@@ -7,10 +7,11 @@ terraform {
   }
   backend "s3" {
     bucket         = "tf-test-playground-bucket"
-    key            = "production/terraform.tfstate"
+    key            = "staging/terraform.tfstate"
     region         = "eu-central-1"
     encrypt        = true
     dynamodb_table = "tf-lock-table"
   }
+
   required_version = "1.9.7"
 }

@@ -1,9 +1,19 @@
-name: Terraform workflow
+name: Terraform workflow for CI branch
 
 on:
   push:
-    branches: ["somebranch"]
+    branches: ["pipes"]
     paths: ["terraform/**"]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Choose between plan and apply'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
 
 env:
   TF_VAR_DB_HOST: ${{ secrets.CI_AWS_DB_HOST }}
@@ -51,3 +61,9 @@ jobs:
           cd terraform/ci
           terraform init
           terraform plan
+
+      - name: Apply
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/ci' && github.event.inputs.action == 'apply'
+        run: |
+          cd terraform/ci
+          terraform apply -auto-approve

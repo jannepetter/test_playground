@@ -6,6 +6,11 @@ terrascan_ci:
 	docker run --rm -v $(shell pwd)/terraform:/project tenable/terrascan scan \
 	 -i terraform -t aws -d /project/ci -l error -c /project/terrascan_config.toml --output json
 
+terrascan_staging:
+	-@echo "Terrascan staging env"
+	docker run --rm -v $(shell pwd)/terraform:/project tenable/terrascan scan \
+	 -i terraform -t aws -d /project/staging -l error -c /project/terrascan_config.toml --output json
+
 terrascan_prod:
 	-@echo "Terrascan production env"
 	docker run --rm -v $(shell pwd)/terraform:/project tenable/terrascan scan \

@@ -50,6 +50,14 @@ run "test_testrunner" {
   assert {
     condition = jsondecode(aws_ecs_task_definition.testrunner_task.container_definitions)[0].environment == [
       {
+        name  = "APP_ENV"
+        value = "ENV"
+      },
+      {
+        name  = "NEXT_PUBLIC_APP_ENV"
+        value = "ENV"
+      },
+      {
         name  = "SET_CRONJOBS"
         value = "cloud"
       },

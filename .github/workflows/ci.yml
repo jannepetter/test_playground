@@ -1,8 +1,9 @@
-name: Docker Image CI
+name: CI branch workflow
 
 on:
   push:
-    branches: ["pipes"]
+    branches: ["ci"]
+    paths-ignore: ["terraform/**"]
 
 env:
   DJANGO_SETTINGS_MODULE: backend.settings
@@ -67,7 +68,7 @@ jobs:
             frontend.tar.zst
             server.tar.zst
             testrunner.tar.zst
-          retention-days: 2
+          retention-days: 5
           overwrite: true
 
       - name: Tear Down Services
@@ -155,6 +156,7 @@ jobs:
           docker compose -f docker-compose.ci.yml down
 
   deploy:
+    if: github.event_name == 'push'
     needs: [test, static]
     runs-on: ubuntu-latest
     steps:
