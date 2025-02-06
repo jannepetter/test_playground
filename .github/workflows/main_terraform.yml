@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set production env variables
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' && github.event.inputs.environment == 'production'
         run: |
             echo "TF_VAR_DB_HOST=${{ secrets.PROD_AWS_DB_HOST }}" >> $GITHUB_ENV
             echo "TF_VAR_DJANGO_SECRET_KEY=${{ secrets.PROD_DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
