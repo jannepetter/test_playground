@@ -1,13 +1,16 @@
 
 variable "POSTGRES_USER" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "POSTGRES_PASSWORD" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "environment" {
-  type = string
+  type      = string
+  sensitive = true
 }
 

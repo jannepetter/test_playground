@@ -1,9 +1,11 @@
 variable "AWS_ACCOUNT_ID" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "AWS_REPO" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "environment" {
@@ -15,6 +17,7 @@ variable "vpc" {
   type = object({
     id = string
   })
+  sensitive = true
 }
 
 variable "subnet" {
@@ -22,6 +25,7 @@ variable "subnet" {
     id   = string
     tags = map(string)
   })
+  sensitive = true
 }
 
 variable "cluster" {
@@ -29,6 +33,7 @@ variable "cluster" {
     id   = string
     name = string
   })
+  sensitive = true
 }
 
 variable "load_balancer" {
@@ -36,4 +41,5 @@ variable "load_balancer" {
     id       = string
     dns_name = string
   })
+  sensitive = true
 }

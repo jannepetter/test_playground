@@ -1,30 +1,37 @@
 
 variable "POSTGRES_USER" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "POSTGRES_PASSWORD" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "JWT_SIGNING_KEY" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "JWT_VERIFYING_KEY" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "DJANGO_SECRET_KEY" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "AWS_ACCOUNT_ID" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "AWS_REPO" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "environment" {
@@ -41,10 +48,12 @@ variable "cluster" {
     id   = string
     name = string
   })
+  sensitive = true
 }
 
 variable "frontend_tg_arn" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "subnet1" {
@@ -52,6 +61,7 @@ variable "subnet1" {
     id   = string
     tags = map(string)
   })
+  sensitive = true
 }
 
 variable "subnet2" {
@@ -59,25 +69,31 @@ variable "subnet2" {
     id   = string
     tags = map(string)
   })
+  sensitive = true
 }
 
 variable "front_sg_id" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "db_address" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "backend_sg_id" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "backend_tg_arn" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "be_enable_execute_command" {
-  type    = bool
-  default = false
+  type      = bool
+  default   = false
+  sensitive = true
 }
