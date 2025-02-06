@@ -1,0 +1,93 @@
+name: Terraform workflow for master branch
+
+on:
+  push:
+    branches: ["master"]
+    paths: ["terraform/**"]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Choose between plan and apply'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+      environment:
+        description: 'Choose between staging and production'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+
+env:
+  TF_VAR_DB_HOST: ${{ secrets.CI_AWS_DB_HOST }}
+  TF_VAR_DJANGO_SECRET_KEY: ${{ secrets.CI_DJANGO_SECRET_KEY}}
+  TF_VAR_JWT_SIGNING_KEY: ${{ secrets.CI_JWT_SIGNING_KEY}}
+  TF_VAR_JWT_VERIFYING_KEY: ${{ secrets.CI_JWT_VERIFYING_KEY}}
+  TF_VAR_POSTGRES_DB: ${{ secrets.CI_POSTGRES_DB}}
+  TF_VAR_POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD}}
+  TF_VAR_POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER}}
+  TF_VAR_AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
+  TF_VAR_AWS_REPO: ${{ secrets.AWS_REPO}}
+  TF_VAR_environment: "staging"
+  TF_VAR_DJANGO_ENV: "development"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set production env variables
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master'
+        run: |
+            echo "TF_VAR_DB_HOST=${{ secrets.PROD_AWS_DB_HOST }}" >> $GITHUB_ENV
+            echo "TF_VAR_DJANGO_SECRET_KEY=${{ secrets.PROD_DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
+            echo "TF_VAR_JWT_SIGNING_KEY=${{ secrets.PROD_JWT_SIGNING_KEY }}" >> $GITHUB_ENV
+            echo "TF_VAR_JWT_VERIFYING_KEY=${{ secrets.PROD_JWT_VERIFYING_KEY }}" >> $GITHUB_ENV
+            echo "TF_VAR_POSTGRES_DB=${{ secrets.PROD_POSTGRES_DB }}" >> $GITHUB_ENV
+            echo "TF_VAR_POSTGRES_PASSWORD=${{ secrets.PROD_POSTGRES_PASSWORD }}" >> $GITHUB_ENV
+            echo "TF_VAR_POSTGRES_USER=${{ secrets.PROD_POSTGRES_USER }}" >> $GITHUB_ENV
+            echo "TF_VAR_environment=production" >> $GITHUB_ENV
+            echo "TF_VAR_DJANGO_ENV=production" >> $GITHUB_ENV
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.7"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Run tests
+        run: |
+          echo "Selected environment: ${{ env.TF_VAR_environment }}"
+          cd terraform/tests
+          terraform init
+          terraform validate
+          terraform test
+
+      - name: Run terrascan
+        run: |
+          make terrascan_${{ env.TF_VAR_environment }}
+
+      - name: Plan
+        run: |
+          cd terraform/${{ env.TF_VAR_environment }}
+          terraform init
+          terraform plan
+
+      - name: Apply
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' && github.event.inputs.action == 'apply'
+        run: |
+          cd terraform/${{ env.TF_VAR_environment }}
+          terraform apply -auto-approve
