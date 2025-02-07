@@ -18,7 +18,7 @@ if [ "$1" = "testrunner" ]; then
     stdbuf -oL -eL /usr/local/bin/aws ecs execute-command \
         --cluster "$CLUSTER_NAME" \
         --task "$TASK_ID" \
-        --container "ci-backend" \
+        --container "${environment}-backend" \
         --interactive \
         --command "sh reset_db.sh" \
         --output text
@@ -31,7 +31,7 @@ else
     aws ecs execute-command \
         --cluster "$CLUSTER_NAME" \
         --task "$TASK_ID" \
-        --container "ci-backend" \
+        --container "${environment}-backend" \
         --interactive \
         --command "sh reset_db.sh" \
         --output text
