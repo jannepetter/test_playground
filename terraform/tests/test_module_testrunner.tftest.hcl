@@ -64,6 +64,10 @@ run "test_testrunner" {
       {
         name  = "TEST_URL"
         value = "http://somename"
+      },
+      {
+        name  = "environment"
+        value = "joo"
       }
     ]
     error_message = "Incorrect environment variables"
