@@ -84,6 +84,7 @@ jobs:
         run: |
           cd terraform/${{ env.TF_VAR_environment }}
           terraform init
+          terraform validate
           terraform plan
 
       - name: Apply
