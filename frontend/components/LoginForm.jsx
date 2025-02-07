@@ -29,7 +29,7 @@ const LoginForm = () => {
   const inputClass = "border-2 m-5";
   return (
     <div className="bg-sky-400 py-20">
-      <h1 className="mx-auto max-w-md">Login</h1>
+      <h1 className="mx-auto max-w-md">Login T1</h1>
       <form onSubmit={handleLogin} data-testid="login-form">
         <div className="m-auto max-w-md">
           <label>username</label>

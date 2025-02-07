@@ -1,6 +1,12 @@
-CLUSTER_NAME="tpg-ci-cluster"
-SERVICE_NAME="ci-backend-service"
+#!/bin/bash
+
+environment=${environment:=ci}
+CLUSTER_NAME="tpg-${environment}-cluster"
+SERVICE_NAME="${environment}-backend-service"
 REGION="eu-central-1"
+
+echo "Cluster Name: $CLUSTER_NAME"
+echo "Service Name: $SERVICE_NAME"
 
 source /etc/environment
 

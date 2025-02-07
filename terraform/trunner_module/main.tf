@@ -90,6 +90,10 @@ resource "aws_ecs_task_definition" "testrunner_task" {
       {
         name  = "NEXT_PUBLIC_APP_ENV"
         value = "ENV"
+      },
+      {
+        name  = "environment"
+        value = "${var.environment}"
       }
     ]
     logConfiguration = {
