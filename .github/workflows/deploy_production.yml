@@ -1,0 +1,19 @@
+name: Deploy to production
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Display the tag
+        run: echo "Deploying tag ${{ inputs.tag }}"

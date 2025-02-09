@@ -3,7 +3,7 @@ name: CI branch workflow
 on:
   push:
     branches: ["ci"]
-    paths-ignore: ["terraform/**"]
+    paths-ignore: ["terraform/**", ".github/workflows/**"]
 
 env:
   DJANGO_SETTINGS_MODULE: backend.settings
@@ -90,10 +90,8 @@ jobs:
 
       - name: Load Docker images
         run: |
-          zstd -d < db.tar.zst | docker load
           zstd -d < frontend.tar.zst | docker load
           zstd -d < server.tar.zst | docker load
-          zstd -d < testrunner.tar.zst | docker load
 
       - name: Scan server image
         uses: anchore/scan-action@v6
@@ -170,7 +168,6 @@ jobs:
 
       - name: Load Docker images
         run: |
-          zstd -d < db.tar.zst | docker load
           zstd -d < frontend.tar.zst | docker load
           zstd -d < server.tar.zst | docker load
           zstd -d < testrunner.tar.zst | docker load
