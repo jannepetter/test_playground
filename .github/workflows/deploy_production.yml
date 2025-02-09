@@ -7,6 +7,14 @@ on:
         description: 'Tag to deploy'
         required: true
         type: string
+      exists:
+        description: 'Image tag already exists in AWS registry'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   deploy:
@@ -15,5 +23,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Display the tag
-        run: echo "Deploying tag ${{ inputs.tag }}"
+
+      - name: Get commit SHA for the tag
+        run: |
+          COMMIT_SHA=$(git rev-list -n 1 ${{ github.event.inputs.tag }})
+          echo "The commit SHA for the tag '$TAG_NAME' is: $COMMIT_SHA"
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+
+      - name: Test1, should not trigger
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/ci' && github.event.inputs.exists == 'true'
+        run: |
+          echo "This should not trigger"
+
+      - name: Test2
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' && github.event.inputs.exists == 'true'
+        run: |
+          echo "This should trigger conditionally1"
+          echo "The commit SHA from Test2 is: $COMMIT_SHA"
+
+      - name: Test3
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' && github.event.inputs.exists == 'false'
+        run: |
+          echo "This should trigger conditionally2"
+          echo "The commit SHA from Test3 is: $COMMIT_SHA"
