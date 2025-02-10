@@ -55,7 +55,7 @@ const LoginForm = () => {
           </button>
         </div>
       </form>
-      <span>T1</span>
+      <span>T2</span>
     </div>
   );
 };
