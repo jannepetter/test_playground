@@ -62,7 +62,7 @@ resource "aws_cloudwatch_log_group" "ecs_testrunner_log_group" {
 }
 
 resource "aws_ecs_task_definition" "testrunner_task" {
-  family                   = "testrunner-task"
+  family                   = "testrunner-task-${var.environment}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256

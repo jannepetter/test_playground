@@ -1,5 +1,5 @@
 resource "aws_ecs_task_definition" "frontend_task" {
-  family                   = "frontend-task"
+  family                   = "frontend-task-${var.environment}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 256
@@ -99,7 +99,7 @@ resource "aws_iam_role_policy_attachment" "ssm_policy_policy_attachment" {
 }
 
 resource "aws_ecs_task_definition" "backend_task" {
-  family                   = "backend-task"
+  family                   = "backend-task-${var.environment}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 512

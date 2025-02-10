@@ -74,8 +74,8 @@ jobs:
     steps:
       - name: Download task-defs
         run: |
-          aws ecs describe-task-definition --task-definition frontend-task --query taskDefinition > frontend-task-definition.json
-          aws ecs describe-task-definition --task-definition backend-task --query taskDefinition > backend-task-definition.json
+          aws ecs describe-task-definition --task-definition frontend-task-production --query taskDefinition > frontend-task-definition.json
+          aws ecs describe-task-definition --task-definition backend-task-production --query taskDefinition > backend-task-definition.json
 
       - name: Update backend ECS task definition
         id: task-def-backend
