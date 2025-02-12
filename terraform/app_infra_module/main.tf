@@ -26,6 +26,9 @@ resource "aws_subnet" "public_subnet2" {
 
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "tpg-${var.environment}-gw"
+  }
 }
 
 resource "aws_route_table" "public_rt" {
