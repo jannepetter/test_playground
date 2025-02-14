@@ -4,6 +4,9 @@ on:
   push:
     branches: ["ci"]
     paths: ["terraform/**"]
+  pull_request:
+      branches: ["ci"]
+      paths: ["terraform/**"]
   workflow_dispatch:
     inputs:
       action:
