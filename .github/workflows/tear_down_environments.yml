@@ -3,6 +3,10 @@ name: Tear down AWS resources.
 on:
   workflow_dispatch:
 
+env:
+  TF_VAR_AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
+  TF_VAR_AWS_REPO: ${{ secrets.AWS_REPO}}
+
 jobs:
   terraform-destroy:
     runs-on: ubuntu-latest
