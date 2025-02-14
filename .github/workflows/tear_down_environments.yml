@@ -4,8 +4,17 @@ on:
   workflow_dispatch:
 
 env:
+  TF_VAR_DB_HOST: "placeholder"
+  TF_VAR_DJANGO_SECRET_KEY: "placeholder"
+  TF_VAR_JWT_SIGNING_KEY: "placeholder"
+  TF_VAR_JWT_VERIFYING_KEY: "placeholder"
+  TF_VAR_POSTGRES_DB: "placeholder"
+  TF_VAR_POSTGRES_PASSWORD: "placeholder"
+  TF_VAR_POSTGRES_USER: "placeholder"
   TF_VAR_AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID}}
   TF_VAR_AWS_REPO: ${{ secrets.AWS_REPO}}
+  TF_VAR_environment: "placeholder"
+  TF_VAR_DJANGO_ENV: "placeholder"
 
 jobs:
   terraform-destroy:
