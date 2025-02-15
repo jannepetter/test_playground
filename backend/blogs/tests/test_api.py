@@ -39,7 +39,7 @@ class TestBlogApi(BaseTestCase):
             data = response.data
             self.assertDictEqual(
                 {
-                    "count": 2,
+                    "count": 3,
                     "next": None,
                     "previous": None,
                     "results":
