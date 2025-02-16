@@ -29,7 +29,7 @@ class TestBlogApi(BaseTestCase):
 
     def test_get_list(self):
         """
-        Test getting a list of blogs.
+        Test getting a list of blogs. Edit
         """
 
         with self.assertNumQueries(3):
