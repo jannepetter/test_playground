@@ -5,6 +5,9 @@ on:
     branches: ["master"]
     paths-ignore: ["terraform/**", ".github/workflows/**"]
   pull_request:
+    types:
+      - opened
+      - synchronize
     branches: ["master"]
     paths-ignore: ["terraform/**", ".github/workflows/**"]
 
