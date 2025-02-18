@@ -34,23 +34,26 @@ const blogs = [
   },
 ];
 
-
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
+  useSearchParams: () => ({
+    toString: jest.fn(),
+  }),
 }));
-
 
 describe("Blog components", () => {
   it("BlogList renders a list of links", async () => {
-    getBlogs.mockResolvedValue({data:{
-      count:2,
-      next:null,
-      previous:null,
-      results:blogs
-    }})
-    render(<BlogList/>);
+    getBlogs.mockResolvedValue({
+      data: {
+        count: 2,
+        next: null,
+        previous: null,
+        results: blogs,
+      },
+    });
+    render(<BlogList />);
     await waitFor(() => {
       const links = screen.getAllByRole("link");
       expect(links).toHaveLength(2);

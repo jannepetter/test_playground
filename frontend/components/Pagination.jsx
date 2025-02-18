@@ -1,6 +1,6 @@
 import React from "react";
-
-const Pagination = ({ data, onUpdatePage }) => {
+import { useSearchParams, useRouter } from "next/navigation";
+const Pagination = ({ data }) => {
   const getPage = (url) => {
     if (!url) {
       return null;
@@ -41,13 +41,19 @@ const Pagination = ({ data, onUpdatePage }) => {
   };
 
   const paginationData = handleData(data);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const newSearchParams = new URLSearchParams(searchParams);
   return (
     <div className="join">
       {paginationData.pageList.map((p) => (
         <button
           key={p}
-          className={`join-item btn btn${paginationData.current === p ? "-disabled" : ""}`}
-          onClick={() => onUpdatePage(p)}
+          className={`join-item btn btn${paginationData.current === p && p !== 1 ? "-disabled" : ""}`}
+          onClick={() => {
+            newSearchParams.set("page", p);
+            router.push(`?${newSearchParams.toString()}`);
+          }}
         >
           {p}
         </button>
