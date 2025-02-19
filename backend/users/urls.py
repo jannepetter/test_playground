@@ -1,11 +1,8 @@
-# router = DefaultRouter()
-# router.register(r'login', LoginView.as_view(
-#     template_name='admin/login.html'), name='login')
-# router.register(r'logout', LogoutView.as_view(), name='logout')
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserViewSet
 
-# urlpatterns = [
-#     # Django authentication views
-#     path('login/',
-#          LoginView.as_view(template_name='admin/login.html'), name='login'),
-#     path('logout/', LogoutView.as_view(), name='logout'),
-# ]
+router = DefaultRouter()
+router.register(r"user", UserViewSet)
+
+urlpatterns = [path("", include(router.urls))]

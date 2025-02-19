@@ -35,6 +35,11 @@ const Navigation = () => {
       <Link className={navItem} href="/blogs/create">
         Create blog
       </Link>
+      {user.admin && (
+        <Link className={navItem} href="/users">
+          Users
+        </Link>
+      )}
       {user && (
         <button className={navItem + " ml-auto mr-10"} onClick={() => handleLogout()}>
           Logout

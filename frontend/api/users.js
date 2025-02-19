@@ -11,3 +11,7 @@ export const refreshedAccessToken = async (refreshToken) => {
   });
   return response;
 };
+
+export const getUsers = async () => {
+    return await apiClient.get("/api/user/");
+};

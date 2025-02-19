@@ -8,8 +8,10 @@ class BlogFilter(django_filters.FilterSet):
     """
     Blogfilter.
     """
+
     username = django_filters.CharFilter(
-        field_name="user__username", lookup_expr="exact")
+        field_name="user__username", lookup_expr="exact"
+    )
 
     class Meta:
         model = Blog

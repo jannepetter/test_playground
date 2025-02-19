@@ -32,6 +32,15 @@ export default function BlogDetail({ blog }) {
       ></ConfirmModal>
       <div className="m-10" data-testid="blog-detail">
         <h1 className="my-5">{blog.title}</h1>
+        <address className="mb-10 font-light">
+          Written by:
+          <a
+            href={`/blogs?username=${blog.user.username}`}
+            className="underline hover:text-blue-800"
+          >
+            {blog.user.username}
+          </a>
+        </address>
         <p>{blog.content}</p>
         {user.id == blog.user.id && (
           <>
