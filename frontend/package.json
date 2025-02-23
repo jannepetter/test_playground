@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:unit": "jest -- tests/unit",
-    "test:integration": "jest -- tests/integration",
+    "test:utils": "jest -- tests/utils",
+    "test:components": "jest -- tests/components",
     "test:coverage": "jest --coverage"
   },
   "dependencies": {

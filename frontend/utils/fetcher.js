@@ -1,7 +1,7 @@
 import { refreshedAccessToken } from "@/api/users";
 import axios from "axios";
 
-const getServerUrl = () => {
+export const getServerUrl = () => {
   switch (process.env.NEXT_PUBLIC_APP_ENV) {
     case "CI":
       return "http://server:8000";
