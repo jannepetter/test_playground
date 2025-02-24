@@ -175,7 +175,8 @@ jobs:
 
       - name: Run backend tests
         run: |
-          docker exec test_playground-server-1 bash -c 'sh init.sh && coverage run --source=${{ matrix.app }} manage.py test ${{ matrix.app }}'
+          docker exec test_playground-server-1 bash -c 'sh init.sh'
+          docker exec test_playground-server-1 bash -c 'coverage run --source=${{ matrix.app }} manage.py test ${{ matrix.app }}'
           docker exec test_playground-server-1 bash -c 'coverage report --fail-under=80'
 
       - name: Tear Down Services
