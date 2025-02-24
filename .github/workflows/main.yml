@@ -199,7 +199,9 @@ jobs:
         run: docker compose -f docker-compose.ci.yml up -d
 
       - name: Run e2e tests
-        run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test critical --project=chromium --reporter=list"
+        run: |
+          docker exec test_playground-server-1 bash -c 'sh init.sh'
+          docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test critical --project=chromium --reporter=list"
 
       - name: Run performance smoke test
         run: |
