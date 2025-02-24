@@ -2,8 +2,9 @@ name: Main branch workflow
 
 on:
   push:
-    branches: ["master"]
-    paths-ignore: ["terraform/**", ".github/workflows/**"]
+    branches: ["feat/maintain-workflows"]
+    # branches: ["master"]
+    # paths-ignore: ["terraform/**", ".github/workflows/**"]
   pull_request:
     types:
       - opened
@@ -117,8 +118,66 @@ jobs:
           output-format: table
           only-fixed: true
 
-  test:
+  test-front:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+
+      - name: Load Docker images
+        run: |
+          zstd -d < db.tar.zst | docker load
+          zstd -d < frontend.tar.zst | docker load
+          zstd -d < server.tar.zst | docker load
+
+      - name: Run images
+        run: docker compose -f docker-compose.ci.yml up -d db server frontend
+
+      - name: Run frontend tests
+        run: docker exec test_playground-frontend-1 npm run test
+
+      - name: Tear Down Services
+        if: always()
+        run: |
+          docker compose -f docker-compose.ci.yml down
+
+  test-back:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+
+      - name: Load Docker images
+        run: |
+          zstd -d < db.tar.zst | docker load
+          zstd -d < server.tar.zst | docker load
+
+      - name: Run images
+        run: docker compose -f docker-compose.ci.yml up -d db server
+
+      - name: Run backend tests
+        run: |
+          docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
+
+      - name: Tear Down Services
+        if: always()
+        run: |
+          docker compose -f docker-compose.ci.yml down
+
+  test-e2e-perf:
+    needs: [static, test-front, test-back]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -139,13 +198,6 @@ jobs:
       - name: Run images
         run: docker compose -f docker-compose.ci.yml up -d
 
-      - name: Run frontend tests
-        run: docker exec test_playground-frontend-1 npm run test
-
-      - name: Run backend tests
-        run: |
-          docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
-
       - name: Run e2e tests
         run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test critical --project=chromium --reporter=list"
 
@@ -160,8 +212,8 @@ jobs:
           docker compose -f docker-compose.ci.yml down
 
   deploy:
-    if: github.event_name == 'push'
-    needs: [test, static]
+    if: github.event_name == 'notgoingtotrigger'
+    needs: [test-e2e-perf]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
