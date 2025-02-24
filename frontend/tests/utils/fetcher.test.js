@@ -49,6 +49,11 @@ describe("Fetcher test", () => {
       expect(getServerUrl()).toBe("");
     });
 
+    it("getServerUrl return correct value in development environment", () => {
+      process.env.NEXT_PUBLIC_APP_ENV = ""
+      expect(getServerUrl()).toBe("http://localhost:8000");
+    });
+
     it('should refresh token and save access token to localstorage', async () => {
       refreshedAccessToken.mockReturnValue({
         status: 200,

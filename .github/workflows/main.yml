@@ -121,6 +121,9 @@ jobs:
   test-front:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tests: [components, utils]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -140,7 +143,7 @@ jobs:
         run: docker compose -f docker-compose.ci.yml up -d db server frontend
 
       - name: Run frontend tests
-        run: docker exec test_playground-frontend-1 npm run test
+        run: docker exec test_playground-frontend-1 npm run test tests/${{ matrix.tests }}
 
       - name: Tear Down Services
         if: always()
@@ -150,6 +153,9 @@ jobs:
   test-back:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [blogs, users]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -169,7 +175,8 @@ jobs:
 
       - name: Run backend tests
         run: |
-          docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
+          docker exec test_playground-server-1 bash -c 'sh init.sh && coverage run --source=${{ matrix.app }} manage.py test ${{ matrix.app }}'
+          docker exec test_playground-server-1 bash -c 'coverage report --fail-under=80'
 
       - name: Tear Down Services
         if: always()
