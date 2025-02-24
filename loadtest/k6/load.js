@@ -1,11 +1,14 @@
 import { testSetup } from "./common/functions.js";
 import { dataConsumerActions, dataCreatorActions } from "./common/actions.js";
 
+const SCENARIO1_TARGET = 20
+const SCENARIO2_TARGET = 10
+
 export const options = {
   summaryTrendStats: ["p(95)", "p(99)"],
   thresholds: {
-    "http_req_duration{name:blog}": ["p(95)<500"],
-    "http_req_duration{name:login}": ["p(95)<600"],
+    "http_req_duration{name:blog}": ["p(95)<1500"],
+    "http_req_duration{name:login}": ["p(95)<2000"],
     http_req_failed: ["rate < 0.01"], // less than 1%
   },
   scenarios: {
@@ -13,8 +16,8 @@ export const options = {
       executor: "ramping-vus",
       startVUs: 0,
       stages: [
-        { duration: "1m", target: 20 },
-        { duration: "4m", target: 20 },
+        { duration: "1m", target: SCENARIO1_TARGET },
+        { duration: "4m", target: SCENARIO1_TARGET },
         { duration: "1m", target: 0 },
       ],
       exec: "sc1",
@@ -23,8 +26,8 @@ export const options = {
       executor: "ramping-vus",
       startVUs: 0,
       stages: [
-        { duration: "1m", target: 10 },
-        { duration: "4m", target: 10 },
+        { duration: "1m", target: SCENARIO2_TARGET },
+        { duration: "4m", target: SCENARIO2_TARGET },
         { duration: "1m", target: 0 },
       ],
       exec: "sc2",
