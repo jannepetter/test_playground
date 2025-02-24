@@ -209,6 +209,7 @@ jobs:
 
       - name: Run e2e tests
         run: |
+          sleep 5
           docker exec test_playground-server-1 bash -c 'sh init.sh'
           docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test critical --project=chromium --reporter=list"
 
