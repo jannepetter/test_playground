@@ -32,6 +32,7 @@ describe('test storage', () => {
       user: {
         username: 'testuser',
         id: '12345',
+        admin: false
       },
     };
 
@@ -40,5 +41,6 @@ describe('test storage', () => {
     expect(mockLocalStorage.getItem('refresh')).toBe('refresh-token');
     expect(mockLocalStorage.getItem('username')).toBe('testuser');
     expect(mockLocalStorage.getItem('userId')).toBe('12345');
+    expect(mockLocalStorage.getItem('admin')).toBe("false");
   });
 });

@@ -7,7 +7,7 @@ const getScript = () => {
     case "ENV":
       return "sh /scripts/aws_reset_db.sh testrunner";
     default:
-      return "sh ./frontend/reset_db.sh";
+      return "sh ./reset_db.sh";
   }
 };
 
@@ -26,5 +26,5 @@ export const resetDb = async () => {
   });
 };
 
-const baseDir = process.env.NEXT_PUBLIC_APP_ENV ? "/app" : "./frontend";
+const baseDir = process.env.NEXT_PUBLIC_APP_ENV ? "/app" : ".";
 export const testAuthPath = `${baseDir}/e2e/setup/auth.json`;

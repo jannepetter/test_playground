@@ -51,8 +51,7 @@ class BaseModelViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         updated_obj = self.perform_update(serializer)
         response_serializer = self.get_response_serializer(updated_obj)
@@ -102,7 +101,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
 
-        user = {"username": serializer.user.username, "id": serializer.user.id}
+        user = {
+            "username": serializer.user.username,
+            "id": serializer.user.id,
+            "admin": serializer.user.is_staff,
+        }
         data = serializer.validated_data
         data["user"] = user
 
@@ -114,4 +117,4 @@ class HealthCheckView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response({'status': 'ok'})
+        return Response({"status": "ok"})

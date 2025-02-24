@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getBlogs } from "@/api/blogs";
 import Pagination from "../Pagination";
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentParams = searchParams.toString();
+
   useEffect(() => {
-    getBlogs()
+    getBlogs(currentParams)
       .then((r) => {
         setBlogs(r.data);
       })
@@ -22,14 +25,8 @@ const BlogList = () => {
           router.push("/login");
         }
       });
-  }, [router]);
+  }, [router, currentParams]);
 
-  const onUpdatePage = async (page) => {
-    if (page) {
-      const newBlogs = await getBlogs(page);
-      setBlogs(newBlogs.data);
-    }
-  };
   return (
     <div className="mx-auto max-w-md">
       <h1 className="my-10">Blogs</h1>
@@ -40,7 +37,7 @@ const BlogList = () => {
           </Link>
         ))}
       </ul>
-      <Pagination data={blogs} onUpdatePage={onUpdatePage}></Pagination>
+      <Pagination data={blogs}></Pagination>
     </div>
   );
 };

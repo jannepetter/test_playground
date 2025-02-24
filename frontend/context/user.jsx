@@ -7,15 +7,18 @@ export function UserProvider({ children }) {
   const [user, setUser] = useState({
     username: null,
     id: null,
+    admin:false
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const username = localStorage.getItem("username");
       const userId = localStorage.getItem("userId");
+      const admin = localStorage.getItem("admin")
       setUser({
         username,
         id: userId,
+        admin:admin === "true" ? true:false
       });
     }
   }, []);

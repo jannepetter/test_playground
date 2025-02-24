@@ -12,19 +12,25 @@ export const options = {
     http_req_failed: ["rate < 0.01"], // less than 1%
   },
   scenarios: {
-    basicUser: {
-      executor: "shared-iterations",
+    scenario_1: {
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { duration: "2m", target: SCENARIO1_TARGET },
+        { duration: "2m", target: SCENARIO1_TARGET },
+        { duration: "2m", target: 0 },
+      ],
       exec: "sc1",
-      vus: SCENARIO1_TARGET,
-      iterations: 40,
-      maxDuration: "1m",
     },
-    contentCreator: {
-      executor: "shared-iterations",
+    scenario_2: {
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { duration: "2m", target: SCENARIO2_TARGET },
+        { duration: "11h56m", target: SCENARIO2_TARGET },
+        { duration: "2m", target: 0 },
+      ],
       exec: "sc2",
-      vus: SCENARIO2_TARGET,
-      iterations: 20,
-      maxDuration: "1m",
     },
   },
 };

@@ -1,5 +1,5 @@
 const { test, expect } = require("@playwright/test");
-const { testAuthPath } = require("./setup/helper");
+const { testAuthPath, resetDb } = require("../setup/helper");
 
 test.describe("Tests for blogs", () => {
   test.use({ storageState: testAuthPath }); // use the logged in user defined in global-setup
@@ -89,4 +89,8 @@ test.describe("Tests for blogs", () => {
       expect(blogLinks.length).toBe(4);
     }).toPass({ timeout: 15000 });
   });
+  test.afterAll(async()=>{
+    console.log("Cleanup after all tests in a project");
+    await resetDb()
+  })
 });

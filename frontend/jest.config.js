@@ -10,11 +10,8 @@ const createJestConfig = nextJest({
 const config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
-  testPathIgnorePatterns: ["e2e", "e2e-examples"],
-  collectCoverageFrom: [
-    'components/**/*.{js,jsx}',
-    'utils/**/*.{js,jsx}',
-  ],
+  testPathIgnorePatterns: ["e2e", "e2e-examples","node_modules"],
+  collectCoverage:true,
   coverageThreshold: {
     global: {
       branches: 80,

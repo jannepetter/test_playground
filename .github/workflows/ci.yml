@@ -144,7 +144,7 @@ jobs:
           docker exec test_playground-server-1 bash -c 'sh init.sh && python manage.py test'
 
       - name: Run e2e tests
-        run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test --reporter=list"
+        run: docker exec test_playground-testrunner-1 bash -c "cd /app && npx playwright test critical --project=chromium --reporter=list"
 
       - name: Run performance smoke test
         run: |
