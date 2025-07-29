@@ -30,3 +30,9 @@ trivy_scan:
 	# usage: trivy_scan IMAGE=<the image>
 	-@echo "Scanning with trivy"
 	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image $(IMAGE) -q
+
+checkov_scan:
+	checkov -d ./terraform/staging --quiet --compact --summary-position bottom
+
+tfsec_scan:
+	docker run --rm -v $(shell pwd):/src aquasec/tfsec /src/terraform/staging --no-code -m MEDIUM --config-file /src/.tfsec.yml
